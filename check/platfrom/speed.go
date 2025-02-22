@@ -13,7 +13,7 @@ func CheckSpeed(httpClient *http.Client) (int, error) {
 	// 创建一个新的测速专用客户端，基于原有客户端的传输层
 	speedClient := &http.Client{
 		// 设置更长的超时时间用于测速
-		Timeout: 10 * time.Second,
+		Timeout: time.Duration(config.GlobalConfig.DownloadTimeout) * time.Second,
 		// 保持原有的传输层配置
 		Transport: httpClient.Transport,
 	}

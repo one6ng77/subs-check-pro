@@ -5,7 +5,7 @@ const DefaultConfigTemplate = `
 print-progress: true
 
 # 并发线程数
-concurrent: 200
+concurrent: 20
 
 # 检查间隔(分钟)
 check-interval: 30
@@ -14,26 +14,26 @@ check-interval: 30
 timeout: 5000
 
 # 测速地址(注意 并发数*节点速度<最大网速 否则测速结果不准确)
-speed-test-url: https://speed.cloudflare.com/__down?bytes=52428800
+# 尽量不要使用Speedtest，Cloudflare提供的下载链接，因为很多节点屏蔽测速网站
+# 建议使用自己上传到Cloudflare R2的文件
+speed-test-url: https://gh-proxy.henryjiu.workers.dev/https://github.com/AaronFeng753/Waifu2x-Extension-GUI/releases/download/v2.21.12/Waifu2x-Extension-GUI-v2.21.12-Portable.7z
 
 # 最低测速结果舍弃(KB/s)
 min-speed: 1024
 
-# 下载测试大小(MB)(目前无效，根据提供的下载链接控制，提供的下载链接多大，则下载多大)
-download-size: 20
+# 下载测试时间(s)(与下载链接大小相关，默认最大测试10s)
+download-timeout: 10
 
-# 上传测试大小(MB)(目前无效，没有上传测速功能)
-upload-size: 20
 
 # mihomo api url(测试完成后自动更新mihomo订阅)
-mihomo-api-url: https://api.mihomo.me/v3/
+mihomo-api-url: ""
 
 # mihomo api secret
 mihomo-api-secret: ""
 
 # 保存方法
 # 目前支持的保存方法: r2, local, gist, webdav
-save-method: r2
+save-method: local
 
 # webdav
 webdav-url: "https://example.com/dav/"

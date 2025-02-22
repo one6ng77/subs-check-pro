@@ -5,8 +5,7 @@ type Config struct {
 	Concurrent      int      `yaml:"concurrent"`
 	CheckInterval   int      `yaml:"check-interval"`
 	SpeedTestUrl    string   `yaml:"speed-test-url"`
-	DownloadSize    int      `yaml:"download-size"`
-	UploadSize      int      `yaml:"upload-size"`
+	DownloadTimeout int      `yaml:"download-timeout"`
 	MinSpeed        int      `yaml:"min-speed"`
 	Timeout         int      `yaml:"timeout"`
 	FilterRegex     string   `yaml:"filter-regex"`

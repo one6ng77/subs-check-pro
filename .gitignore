@@ -2,3 +2,11 @@ openipdb.ipdb
 config.yaml
 mihomo.yaml
 test
+
+output/*
+mihomo-check*
+
+.idea
+.vscode
+
+.DS_Store
