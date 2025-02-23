@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/bestruirui/mihomo-check/check/platfrom"
@@ -36,7 +37,6 @@ type ProxyChecker struct {
 	threadCount int
 	progress    int32
 	available   int32
-	mu          sync.Mutex
 	resultChan  chan Result
 	tasks       chan map[string]any
 }
@@ -106,6 +106,8 @@ func (pc *ProxyChecker) run(proxies []map[string]any) ([]Result, error) {
 
 	// 等待结果收集完成
 	collectWg.Wait()
+	// 等待进度条显示完成
+	time.Sleep(100 * time.Millisecond)
 
 	if config.GlobalConfig.PrintProgress {
 		done <- true
@@ -128,6 +130,7 @@ func (pc *ProxyChecker) worker(wg *sync.WaitGroup) {
 
 // checkProxy 检测单个代理
 func (pc *ProxyChecker) checkProxy(proxy map[string]any) *Result {
+	log.SetLevel(log.ERROR)
 	httpClient := CreateClient(proxy)
 	if httpClient == nil {
 		return nil
@@ -158,6 +161,8 @@ func (pc *ProxyChecker) checkProxy(proxy map[string]any) *Result {
 	// 更新代理名称
 	pc.updateProxyName(proxy, httpClient, speed)
 	pc.incrementAvailable()
+
+	log.SetLevel(log.INFO)
 
 	return &Result{
 		Proxy:      proxy,
@@ -197,10 +202,8 @@ func (pc *ProxyChecker) showProgress(done chan bool) {
 			fmt.Println()
 			return
 		default:
-			pc.mu.Lock()
-			current := pc.progress
-			available := pc.available
-			pc.mu.Unlock()
+			current := atomic.LoadInt32(&pc.progress)
+			available := atomic.LoadInt32(&pc.available)
 
 			percent := float64(current) / float64(pc.proxyCount) * 100
 			fmt.Printf("\r进度: [%-50s] %.1f%% (%d/%d) 可用: %d",
@@ -216,15 +219,11 @@ func (pc *ProxyChecker) showProgress(done chan bool) {
 
 // 辅助方法
 func (pc *ProxyChecker) incrementProgress() {
-	pc.mu.Lock()
-	pc.progress++
-	pc.mu.Unlock()
+	atomic.AddInt32(&pc.progress, 1)
 }
 
 func (pc *ProxyChecker) incrementAvailable() {
-	pc.mu.Lock()
-	pc.available++
-	pc.mu.Unlock()
+	atomic.AddInt32(&pc.available, 1)
 }
 
 // distributeProxies 分发代理任务
