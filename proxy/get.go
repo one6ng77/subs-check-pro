@@ -43,10 +43,10 @@ func GetProxies() ([]map[string]any, error) {
 					if parseProxy == nil {
 						continue
 					}
-					// fmt.Println(proxy)
 					mihomoProxies = append(mihomoProxies, parseProxy)
 				}
-				return mihomoProxies, nil
+				// 跳出当前订阅
+				continue
 			}
 		}
 		proxyInterface, ok := config["proxies"]
@@ -73,7 +73,7 @@ func GetProxies() ([]map[string]any, error) {
 
 // 订阅链接中获取数据
 func GetDateFromSubs(subUrl string) ([]byte, error) {
-	maxRetries := 30
+	maxRetries := config.GlobalConfig.SubUrlsReTry
 	var lastErr error
 
 	client := &http.Client{}

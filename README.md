@@ -1,5 +1,7 @@
 # 订阅合并转换检测工具
 
+对比原项目是修复了一些逻辑、简化了一些东西
+
 ## 预览
 
 ![preview](./doc/images/preview.png)
@@ -38,16 +40,6 @@
 
 ## 使用方法
 
-### Docker
-
-```bash
-docker run -itd \
-    --name mihomo-check \
-    -v /path/to/config:/app/config \
-    --restart=always \
-    ghcr.io/bestruirui/subs-check
-```
-
 ### 源码直接运行
 
 ```bash
@@ -69,7 +61,7 @@ go run main.go -f /path/to/config.yaml
 
 推荐直接裸核运行 tun 模式 
 
-我自己写的Windows下的裸核运行应用 [minihomo](https://github.com/bestruirui/minihomo)
+原作者写的Windows下的裸核运行应用 [minihomo](https://github.com/bestruirui/minihomo)
 
 - 下载[base.yaml](./doc/base.yaml)
 - 将文件中对应的链接改为自己的即可
