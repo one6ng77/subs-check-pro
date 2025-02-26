@@ -1,6 +1,6 @@
 # 订阅合并转换检测工具
 
-对比原项目是修复了一些逻辑、简化了一些东西
+对比原项目是修复了一些逻辑、简化了一些东西、增加了一些功能
 
 ## 预览
 
@@ -16,11 +16,12 @@
     - netflix
     - disney
 - 合并多个订阅
-- 将订阅转换为clash/mihomo格式
+- 将订阅转换为clash/mihomo/base64格式
 - 节点去重
 - 节点重命名
 - 节点测速（单线程）
 - 根据解锁情况分类保存
+- 支持外部拉取结果（默认监听 :8199）
 
 ## 特点
 
@@ -36,10 +37,36 @@
     - [x] cloudflare r2
     - [x] gist
     - [x] webdav
+    - [x] http server
     - [ ] 其他
 
 ## 使用方法
 
+### docker运行
+
+```bash
+docker run -d --name subs-check -p 8199:8199 -v ./config:/app/config  -v ./output:/app/output --restart always ghcr.io/beck-8/subs-check:latest
+```
+
+### docker-compose
+
+```yaml
+version: "3"
+services:
+  mihomo-check:
+    image: ghcr.io/beck-8/subs-check:latest
+    container_name: subs-check
+    volumes:
+      - ./config:/app/config
+      - ./output:/app/output
+    ports:
+      - "8199:8199"
+    environment:
+      - TZ=Asia/Shanghai
+    restart: always
+    tty: true
+    network_mode: bridge
+```
 ### 源码直接运行
 
 ```bash
@@ -56,6 +83,10 @@ go run main.go -f /path/to/config.yaml
 - r2: 将结果保存到 cloudflare r2 存储桶 [配置方法](./doc/r2.md)
 - gist: 将结果保存到 github gist [配置方法](./doc/gist.md)
 - webdav: 将结果保存到 webdav 服务器 [配置方法](./doc/webdav.md)
+
+## 对外提供服务配置
+- `http://127.0.0.1:8199/all.yaml` 返回yaml格式节点
+- `http://127.0.0.1:8199/all.txt` 返回base64格式节点
 
 ## 订阅使用方法
 
