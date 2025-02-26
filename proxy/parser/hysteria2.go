@@ -19,11 +19,6 @@ func ParseHysteria2(data string) (map[string]any, error) {
 		return nil, err
 	}
 
-	username := link.User.Username()
-	password, exist := link.User.Password()
-	if !exist {
-		password = username
-	}
 	query := link.Query()
 	server := link.Hostname()
 	if server == "" {
@@ -37,21 +32,19 @@ func ParseHysteria2(data string) (map[string]any, error) {
 	if err != nil {
 		return nil, fmt.Errorf("hysteria2 端口错误")
 	}
-	network, obfs, obfsPassword, pinSHA256, insecure, sni := query.Get("network"), query.Get("obfs"), query.Get("obfs-password"), query.Get("pinSHA256"), query.Get("insecure"), query.Get("sni")
-	enableTLS := pinSHA256 != "" || sni != ""
+	_, obfs, obfsPassword, _, insecure, sni := query.Get("network"), query.Get("obfs"), query.Get("obfs-password"), query.Get("pinSHA256"), query.Get("insecure"), query.Get("sni")
 	insecureBool := insecure == "1"
 
 	return map[string]any{
-		"type":           "hysteria2",
-		"name":           username,
-		"server":         server,
-		"port":           port,
-		"password":       password,
-		"obfs":           obfs,
-		"obfsParam":      obfsPassword,
-		"sni":            sni,
-		"skipCertVerify": insecureBool,
-		"tls":            enableTLS,
-		"network":        network,
+		"type":             "hysteria2",
+		"name":             link.Fragment,
+		"server":           server,
+		"port":             port,
+		"ports":            query.Get("mport"),
+		"password":         link.User.String(),
+		"obfs":             obfs,
+		"obfs-password":    obfsPassword,
+		"sni":              sni,
+		"skip-cert-verify": insecureBool,
 	}, nil
 }
