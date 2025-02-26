@@ -2,6 +2,8 @@ package platfrom
 
 import (
 	"net/http"
+
+	"github.com/metacubex/mihomo/log"
 )
 
 func CheckCloudflare(httpClient *http.Client) (bool, error) {
@@ -30,6 +32,6 @@ func checkCloudflareEndpoint(httpClient *http.Client, url string, statusCode int
 		return false, err
 	}
 	defer resp.Body.Close()
-	// log.Infoln("resp.StatusCode: %d ,url: %s", resp.StatusCode, url)
+	log.Debugln("resp.StatusCode: %d ,url: %s", resp.StatusCode, url)
 	return resp.StatusCode == statusCode, nil
 }

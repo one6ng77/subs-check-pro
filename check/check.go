@@ -82,7 +82,8 @@ func (pc *ProxyChecker) run(proxies []map[string]any) ([]Result, error) {
 	if config.GlobalConfig.PrintProgress {
 		go pc.showProgress(done)
 	}
-
+	// todo: 替换掉日志库
+	log.SetLevel(log.ERROR)
 	var wg sync.WaitGroup
 	// 启动工作线程
 	for i := 0; i < pc.threadCount; i++ {
@@ -112,7 +113,7 @@ func (pc *ProxyChecker) run(proxies []map[string]any) ([]Result, error) {
 	if config.GlobalConfig.PrintProgress {
 		done <- true
 	}
-
+	log.SetLevel(log.INFO)
 	log.Infoln("共 %v 个可用节点", len(pc.results))
 	return pc.results, nil
 }
@@ -130,12 +131,11 @@ func (pc *ProxyChecker) worker(wg *sync.WaitGroup) {
 
 // checkProxy 检测单个代理
 func (pc *ProxyChecker) checkProxy(proxy map[string]any) *Result {
-	log.SetLevel(log.ERROR)
 	httpClient := CreateClient(proxy)
 	if httpClient == nil {
 		return nil
 	}
-	// log.Infoln("开始检测代理: %v", proxy["name"])
+	log.Debugln("开始检测代理: %v", proxy["name"])
 	cloudflare, err := platfrom.CheckCloudflare(httpClient)
 	if err != nil || !cloudflare {
 		return nil
@@ -161,8 +161,6 @@ func (pc *ProxyChecker) checkProxy(proxy map[string]any) *Result {
 	// 更新代理名称
 	pc.updateProxyName(proxy, httpClient, speed)
 	pc.incrementAvailable()
-
-	log.SetLevel(log.INFO)
 
 	return &Result{
 		Proxy:      proxy,
