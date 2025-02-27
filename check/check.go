@@ -201,7 +201,7 @@ func (pc *ProxyChecker) updateProxyName(proxy map[string]any, client *http.Clien
 		} else {
 			speedStr = fmt.Sprintf("%.1fMB/s", float64(speed)/1024)
 		}
-		proxy["name"] = proxy["name"].(string) + " | ⬇️ " + speedStr
+		proxy["name"] = strings.TrimSpace(proxy["name"].(string)) + " | ⬇️ " + speedStr
 	}
 }
 
