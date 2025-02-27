@@ -232,6 +232,16 @@ func genUrls(data []byte) (string, error) {
 
 		// 设置查询参数
 		q := url.Values{}
+
+		// 检测vless 如果开了tls，则设置security为tls,后边如果发现有sid字段，则设置security为reality
+		tls, err := jsonparser.GetBoolean(value, "tls")
+		if err != nil {
+			slog.Debug(fmt.Sprintf("获取name字段失败: %s", err))
+			return
+		}
+		if tls {
+			q.Set("security", "tls")
+		}
 		err = jsonparser.ObjectEach(value, func(key []byte, val []byte, dataType jsonparser.ValueType, offset int) error {
 			keyStr := string(key)
 			// 跳过已处理的基本字段
@@ -259,6 +269,7 @@ func genUrls(data []byte) (string, error) {
 					q.Set("pbk", v)
 				case "short-id":
 					q.Set("sid", v)
+					q.Set("security", "reality")
 				case "ports":
 					q.Set("mport", v)
 				case "skip-cert-verify":
@@ -291,7 +302,7 @@ func genUrls(data []byte) (string, error) {
 					return nil
 				})
 			} else {
-				q.Set(keyStr, string(val))
+				conversion(keyStr, string(val))
 			}
 
 			return nil
