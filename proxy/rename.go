@@ -3,50 +3,51 @@ package proxies
 import (
 	"regexp"
 	"strconv"
+	"sync/atomic"
 )
 
 // Counter 用于存储各个地区的计数
 type Counter struct {
 	// 香港
-	hk int
+	hk int32
 	// 台湾
-	tw int
+	tw int32
 	// 美国
-	us int
+	us int32
 	// 新加坡
-	sg int
+	sg int32
 	// 日本
-	jp int
+	jp int32
 	// 英国
-	uk int
+	uk int32
 	// 加拿大
-	ca int
+	ca int32
 	// 澳大利亚
-	au int
+	au int32
 	// 德国
-	de int
+	de int32
 	// 法国
-	fr int
+	fr int32
 	// 荷兰
-	nl int
+	nl int32
 	// 俄罗斯
-	ru int
+	ru int32
 	// 匈牙利
-	hu int
+	hu int32
 	// 乌克兰
-	ua int
+	ua int32
 	// 波兰
-	pl int
+	pl int32
 	// 韩国
-	kr int
+	kr int32
 	// 亚太地区
-	ap int
+	ap int32
 	// 伊朗
-	ir int
+	ir int32
 	// 意大利
-	it int
+	it int32
 	// 其他
-	other int
+	other int32
 }
 
 var counter Counter
@@ -59,100 +60,100 @@ func ResetRenameCounter() {
 func Rename(name string) string {
 	// 香港
 	if regexp.MustCompile(`(?i)(hk|港|hongkong|hong kong)`).MatchString(name) {
-		counter.hk++
-		return "🇭🇰香港" + strconv.Itoa(counter.hk)
+		atomic.AddInt32(&counter.hk, 1)
+		return "🇭🇰香港" + strconv.Itoa(int(atomic.LoadInt32(&counter.hk)))
 	}
 	// 台湾
 	if regexp.MustCompile(`(?i)(tw|台|taiwan|tai wen)`).MatchString(name) {
-		counter.tw++
-		return "🇹🇼台湾" + strconv.Itoa(counter.tw)
+		atomic.AddInt32(&counter.tw, 1)
+		return "🇹🇼台湾" + strconv.Itoa(int(atomic.LoadInt32(&counter.tw)))
 	}
 	// 美国
 	if regexp.MustCompile(`(?i)(us|美|united states|america)`).MatchString(name) {
-		counter.us++
-		return "🇺🇸美国" + strconv.Itoa(counter.us)
+		atomic.AddInt32(&counter.us, 1)
+		return "🇺🇸美国" + strconv.Itoa(int(atomic.LoadInt32(&counter.us)))
 	}
 	// 新加坡
 	if regexp.MustCompile(`(?i)(sg|新|singapore|狮城)`).MatchString(name) {
-		counter.sg++
-		return "🇸🇬新加坡" + strconv.Itoa(counter.sg)
+		atomic.AddInt32(&counter.sg, 1)
+		return "🇸🇬新加坡" + strconv.Itoa(int(atomic.LoadInt32(&counter.sg)))
 	}
 	// 日本
 	if regexp.MustCompile(`(?i)(jp|日|japan)`).MatchString(name) {
-		counter.jp++
-		return "🇯🇵日本" + strconv.Itoa(counter.jp)
+		atomic.AddInt32(&counter.jp, 1)
+		return "🇯🇵日本" + strconv.Itoa(int(atomic.LoadInt32(&counter.jp)))
 	}
 	// 英国
 	if regexp.MustCompile(`(?i)(uk|英|united kingdom|britain)`).MatchString(name) {
-		counter.uk++
-		return "🇬🇧英国" + strconv.Itoa(counter.uk)
+		atomic.AddInt32(&counter.uk, 1)
+		return "🇬🇧英国" + strconv.Itoa(int(atomic.LoadInt32(&counter.uk)))
 	}
 	// 加拿大
 	if regexp.MustCompile(`(?i)(ca|加|canada)`).MatchString(name) {
-		counter.ca++
-		return "🇨🇦加拿大" + strconv.Itoa(counter.ca)
+		atomic.AddInt32(&counter.ca, 1)
+		return "🇨🇦加拿大" + strconv.Itoa(int(atomic.LoadInt32(&counter.ca)))
 	}
 	// 澳大利亚
 	if regexp.MustCompile(`(?i)(au|澳|australia)`).MatchString(name) {
-		counter.au++
-		return "🇦🇺澳大利亚" + strconv.Itoa(counter.au)
+		atomic.AddInt32(&counter.au, 1)
+		return "🇦🇺澳大利亚" + strconv.Itoa(int(atomic.LoadInt32(&counter.au)))
 	}
 	// 德国
 	if regexp.MustCompile(`(?i)(de|德|germany|deutschland)`).MatchString(name) {
-		counter.de++
-		return "🇩🇪德国" + strconv.Itoa(counter.de)
+		atomic.AddInt32(&counter.de, 1)
+		return "🇩🇪德国" + strconv.Itoa(int(atomic.LoadInt32(&counter.de)))
 	}
 	// 法国
 	if regexp.MustCompile(`(?i)(fr|法|france)`).MatchString(name) {
-		counter.fr++
-		return "🇫🇷法国" + strconv.Itoa(counter.fr)
+		atomic.AddInt32(&counter.fr, 1)
+		return "🇫🇷法国" + strconv.Itoa(int(atomic.LoadInt32(&counter.fr)))
 	}
 	// 荷兰
 	if regexp.MustCompile(`(?i)(nl|荷|netherlands)`).MatchString(name) {
-		counter.nl++
-		return "🇳🇱荷兰" + strconv.Itoa(counter.nl)
+		atomic.AddInt32(&counter.nl, 1)
+		return "🇳🇱荷兰" + strconv.Itoa(int(atomic.LoadInt32(&counter.nl)))
 	}
 	// 俄罗斯
 	if regexp.MustCompile(`(?i)(ru|俄|russia)`).MatchString(name) {
-		counter.ru++
-		return "🇷🇺俄罗斯" + strconv.Itoa(counter.ru)
+		atomic.AddInt32(&counter.ru, 1)
+		return "🇷🇺俄罗斯" + strconv.Itoa(int(atomic.LoadInt32(&counter.ru)))
 	}
 	// 匈牙利
 	if regexp.MustCompile(`(?i)(hu|匈|hungary)`).MatchString(name) {
-		counter.hu++
-		return "🇭🇺匈牙利" + strconv.Itoa(counter.hu)
+		atomic.AddInt32(&counter.hu, 1)
+		return "🇭🇺匈牙利" + strconv.Itoa(int(atomic.LoadInt32(&counter.hu)))
 	}
 	// 乌克兰
 	if regexp.MustCompile(`(?i)(ua|乌|ukraine)`).MatchString(name) {
-		counter.ua++
-		return "🇺🇦乌克兰" + strconv.Itoa(counter.ua)
+		atomic.AddInt32(&counter.ua, 1)
+		return "🇺🇦乌克兰" + strconv.Itoa(int(atomic.LoadInt32(&counter.ua)))
 	}
 	// 波兰
 	if regexp.MustCompile(`(?i)(pl|波|poland)`).MatchString(name) {
-		counter.pl++
-		return "🇵🇱波兰" + strconv.Itoa(counter.pl)
+		atomic.AddInt32(&counter.pl, 1)
+		return "🇵🇱波兰" + strconv.Itoa(int(atomic.LoadInt32(&counter.pl)))
 	}
 	// 韩国
 	if regexp.MustCompile(`(?i)(kr|韩|korea)`).MatchString(name) {
-		counter.kr++
-		return "🇰🇷韩国" + strconv.Itoa(counter.kr)
+		atomic.AddInt32(&counter.kr, 1)
+		return "🇰🇷韩国" + strconv.Itoa(int(atomic.LoadInt32(&counter.kr)))
 	}
 	// 亚太地区
 	if regexp.MustCompile(`(?i)(ap|亚太|asia)`).MatchString(name) {
-		counter.ap++
-		return "🌏亚太地区" + strconv.Itoa(counter.ap)
+		atomic.AddInt32(&counter.ap, 1)
+		return "🌏亚太地区" + strconv.Itoa(int(atomic.LoadInt32(&counter.ap)))
 	}
 	// 伊朗
 	if regexp.MustCompile(`(?i)(ir|伊|iran)`).MatchString(name) {
-		counter.ir++
-		return "🇮🇷伊朗" + strconv.Itoa(counter.ir)
+		atomic.AddInt32(&counter.ir, 1)
+		return "🇮🇷伊朗" + strconv.Itoa(int(atomic.LoadInt32(&counter.ir)))
 	}
 	// 意大利
 	if regexp.MustCompile(`(?i)(it|意|italy)`).MatchString(name) {
-		counter.it++
-		return "🇮🇹意大利" + strconv.Itoa(counter.it)
+		atomic.AddInt32(&counter.it, 1)
+		return "🇮🇹意大利" + strconv.Itoa(int(atomic.LoadInt32(&counter.it)))
 	}
 	// 其他
-	counter.other++
-	return "🌀其他" + strconv.Itoa(counter.other) + "-" + name
+	atomic.AddInt32(&counter.other, 1)
+	return "🌀其他" + strconv.Itoa(int(atomic.LoadInt32(&counter.other))) + "-" + name
 }
