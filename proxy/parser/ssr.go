@@ -11,6 +11,7 @@ func ParseSsr(data string) (map[string]any, error) {
 	if !strings.HasPrefix(data, "ssr://") {
 		return nil, fmt.Errorf("不是ssr格式")
 	}
+	// todo: 这些参数解析应该也有问题
 	data = strings.TrimPrefix(data, "ssr://")
 	data = DecodeBase64(data)
 	serverInfoAndParams := strings.SplitN(data, "/?", 2)
@@ -50,14 +51,14 @@ func ParseSsr(data string) (map[string]any, error) {
 
 	}
 	return map[string]any{
-		"name":       remarks,
-		"server":     server,
-		"port":       port,
-		"password":   password,
-		"method":     method,
-		"obfs":       obfs,
-		"protocol":   protocol,
-		"obfsParam":  obfsParam,
-		"protoParam": protoParam,
+		"name":           remarks,
+		"server":         server,
+		"port":           port,
+		"password":       password,
+		"cipher":         method,
+		"obfs":           obfs,
+		"obfs-param":     obfsParam,
+		"protocol":       protocol,
+		"protocol-param": protoParam,
 	}, nil
 }
