@@ -55,6 +55,9 @@ func ParseTrojan(data string) (map[string]any, error) {
 				return "original"
 			}
 		}(),
+		"skip-cert-verify": params.Get("allowInsecure") == "1",
+		// 添加原格式
+		"allowInsecure": params.Get("allowInsecure"),
 	}
 
 	// 添加TLS配置
