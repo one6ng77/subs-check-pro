@@ -10,11 +10,11 @@
 ## 功能
 
 - 检测节点可用性,去除不可用节点
-- 检测平台解锁情况
-    - openai
-    - youtube
-    - netflix
-    - disney
+- ~~检测平台解锁情况~~ 暂时注释了，因为我觉得没啥用
+    - ~~openai~~
+    - ~~youtube~~
+    - ~~netflix~~
+    - ~~disney~~
 - 合并多个订阅
 - 将订阅转换为clash/mihomo/base64格式
 - 节点去重
@@ -39,6 +39,7 @@
     - [x] webdav
     - [x] http server
     - [ ] 其他
+- [ ] 已知从clash格式转base64时vmess节点会丢失。因为太麻烦了，我不想处理了。
 
 ## 使用方法
 > 如果拉取订阅速度慢，可使用通用的 `HTTP_PROXY` `HTTPS_PROXY` 环境变量加快速度；此变量不会影响节点测试速度

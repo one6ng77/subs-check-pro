@@ -110,7 +110,6 @@ func (pc *ProxyChecker) run(proxies []map[string]any) ([]Result, error) {
 
 	// 等待结果收集完成
 	collectWg.Wait()
-	slog.Debug("结果收集完成")
 	// 等待进度条显示完成
 	time.Sleep(100 * time.Millisecond)
 

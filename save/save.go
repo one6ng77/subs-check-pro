@@ -42,26 +42,26 @@ func NewConfigSaver(results []check.Result) *ConfigSaver {
 				Proxies: make([]map[string]any, 0),
 				Filter:  func(result check.Result) bool { return true },
 			},
-			{
-				Name:    "openai.yaml",
-				Proxies: make([]map[string]any, 0),
-				Filter:  func(result check.Result) bool { return result.Openai },
-			},
-			{
-				Name:    "youtube.yaml",
-				Proxies: make([]map[string]any, 0),
-				Filter:  func(result check.Result) bool { return result.Youtube },
-			},
-			{
-				Name:    "netflix.yaml",
-				Proxies: make([]map[string]any, 0),
-				Filter:  func(result check.Result) bool { return result.Netflix },
-			},
-			{
-				Name:    "disney.yaml",
-				Proxies: make([]map[string]any, 0),
-				Filter:  func(result check.Result) bool { return result.Disney },
-			},
+			// {
+			// 	Name:    "openai.yaml",
+			// 	Proxies: make([]map[string]any, 0),
+			// 	Filter:  func(result check.Result) bool { return result.Openai },
+			// },
+			// {
+			// 	Name:    "youtube.yaml",
+			// 	Proxies: make([]map[string]any, 0),
+			// 	Filter:  func(result check.Result) bool { return result.Youtube },
+			// },
+			// {
+			// 	Name:    "netflix.yaml",
+			// 	Proxies: make([]map[string]any, 0),
+			// 	Filter:  func(result check.Result) bool { return result.Netflix },
+			// },
+			// {
+			// 	Name:    "disney.yaml",
+			// 	Proxies: make([]map[string]any, 0),
+			// 	Filter:  func(result check.Result) bool { return result.Disney },
+			// },
 		},
 	}
 }
@@ -99,13 +99,13 @@ func (cs *ConfigSaver) Save() error {
 	// 保存各个类别的代理
 	for _, category := range cs.categories {
 		if err := cs.saveCategory(category); err != nil {
-			slog.Error(fmt.Sprintf("保存yaml类别失败: %v", err))
+			slog.Error(fmt.Sprintf("保存到%s失败: %v", config.GlobalConfig.SaveMethod, err))
 			continue
 		}
 
 		category.Name = strings.TrimSuffix(category.Name, ".yaml") + ".txt"
 		if err := cs.saveCategoryBase64(category); err != nil {
-			slog.Error(fmt.Sprintf("保存base64类别失败: %v", err))
+			slog.Error(fmt.Sprintf("保存到%s失败: %v", config.GlobalConfig.SaveMethod, err))
 
 			continue
 		}
