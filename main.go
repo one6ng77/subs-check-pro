@@ -25,7 +25,6 @@ type App struct {
 	interval    int
 	watcher     *fsnotify.Watcher
 	reloadTimer *time.Timer
-	lastReload  time.Time
 }
 
 // NewApp 创建新的应用实例
