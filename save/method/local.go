@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/beck-8/subs-check/config"
 	"github.com/beck-8/subs-check/utils"
 )
 
@@ -28,7 +29,13 @@ func NewLocalSaver() (*LocalSaver, error) {
 		return nil, fmt.Errorf("获取可执行文件路径失败")
 	}
 
-	outputPath := filepath.Join(basePath, outputDirName)
+	var outputPath string
+	if config.GlobalConfig.OutputDir != "" {
+		outputPath = config.GlobalConfig.OutputDir
+	} else {
+		outputPath = filepath.Join(basePath, outputDirName)
+	}
+
 	return &LocalSaver{
 		BasePath:   basePath,
 		OutputPath: outputPath,

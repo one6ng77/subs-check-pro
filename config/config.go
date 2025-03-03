@@ -27,6 +27,7 @@ type Config struct {
 	ListenPort         string   `yaml:"listen-port"`
 	RenameNode         bool     `yaml:"rename-node"`
 	KeepSuccessProxies bool     `yaml:"keep-success-proxies"`
+	OutputDir          string   `yaml:"output-dir"`
 }
 
 var GlobalConfig = &Config{

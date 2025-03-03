@@ -34,6 +34,10 @@ rename-node: false
 # 如果为true，则保留之前测试成功的节点，这样就不会因为上游链接更新，导致可用的节点被清除掉
 keep-success-proxies: false
 
+# 输出目录
+# 如果为空，则为程序所在目录的config目录
+output-dir: ""
+
 # mihomo api url(测试完成后自动更新mihomo订阅)
 mihomo-api-url: ""
 
