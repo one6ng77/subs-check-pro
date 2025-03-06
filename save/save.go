@@ -227,7 +227,7 @@ func genUrls(data []byte) (*bytes.Buffer, error) {
 				slog.Debug(fmt.Sprintf("获取cipher字段失败: %s", err))
 				return
 			}
-			password = cipher + ":" + password
+			password = base64.StdEncoding.EncodeToString([]byte(cipher + ":" + password))
 		}
 		server, err := jsonparser.GetString(value, "server")
 		if err != nil {
