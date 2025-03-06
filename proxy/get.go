@@ -20,7 +20,7 @@ func GetProxies() ([]map[string]any, error) {
 	slog.Info(fmt.Sprintf("当前设置订阅链接数量: %d", len(config.GlobalConfig.SubUrls)))
 
 	var mihomoProxies []map[string]any
-
+	var con map[string]any
 	for _, subUrl := range config.GlobalConfig.SubUrls {
 		data, err := GetDateFromSubs(subUrl)
 		if err != nil {
@@ -28,8 +28,7 @@ func GetProxies() ([]map[string]any, error) {
 			continue
 		}
 		slog.Debug(fmt.Sprintf("获取订阅链接: %s，数据长度: %d", subUrl, len(data)))
-		var config map[string]any
-		err = yaml.Unmarshal(data, &config)
+		err = yaml.Unmarshal(data, &con)
 		if err != nil {
 			reg, _ := regexp.Compile("(ssr|ss|vmess|trojan|vless|hysteria|hy2|hysteria2)://")
 			// 如果不匹配则base64解码
@@ -62,7 +61,7 @@ func GetProxies() ([]map[string]any, error) {
 				continue
 			}
 		}
-		proxyInterface, ok := config["proxies"]
+		proxyInterface, ok := con["proxies"]
 		if !ok || proxyInterface == nil {
 			slog.Error(fmt.Sprintf("订阅链接没有proxies: %s", subUrl))
 			continue

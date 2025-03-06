@@ -44,8 +44,7 @@ type ProxyChecker struct {
 }
 
 // NewProxyChecker 创建新的检测器实例
-func NewProxyChecker(proxies []map[string]any) *ProxyChecker {
-	proxyCount := len(proxies)
+func NewProxyChecker(proxyCount int) *ProxyChecker {
 	threadCount := config.GlobalConfig.Concurrent
 	if proxyCount < threadCount {
 		threadCount = proxyCount
@@ -72,9 +71,7 @@ func Check() ([]Result, error) {
 
 	if config.GlobalConfig.KeepSuccessProxies {
 		slog.Info(fmt.Sprintf("添加之前测试成功的节点，数量: %d", len(config.GlobalProxies)))
-		for _, proxy := range config.GlobalProxies {
-			proxies = append(proxies, proxy)
-		}
+		proxies = append(proxies, config.GlobalProxies...)
 	}
 	// 重置全局节点
 	config.GlobalProxies = make([]map[string]any, 0)
@@ -82,7 +79,7 @@ func Check() ([]Result, error) {
 	proxies = proxyutils.DeduplicateProxies(proxies)
 	slog.Info(fmt.Sprintf("去重后节点数量: %d", len(proxies)))
 
-	checker := NewProxyChecker(proxies)
+	checker := NewProxyChecker(len(proxies))
 	return checker.run(proxies)
 }
 
