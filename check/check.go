@@ -143,7 +143,7 @@ func (pc *ProxyChecker) checkProxy(proxy map[string]any) *Result {
 		Proxy: proxy,
 	}
 
-	if os.Getenv("SUB_CHECK_SKIP") == "true" {
+	if os.Getenv("SUB_CHECK_SKIP") != "" {
 		// slog.Debug(fmt.Sprintf("跳过检测代理: %v", proxy["name"]))
 		return res
 	}
@@ -318,4 +318,5 @@ func (pc *ProxyClient) Close() {
 	if transport, ok := pc.Transport.(*http.Transport); ok {
 		transport.CloseIdleConnections()
 	}
+	pc.Transport = nil
 }

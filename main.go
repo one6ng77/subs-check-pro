@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime/debug"
 	"time"
 
 	"log/slog"
@@ -185,6 +186,7 @@ func (app *App) Run() {
 
 		nextCheck := time.Now().Add(time.Duration(app.interval) * time.Minute)
 		slog.Info(fmt.Sprintf("下次检查时间: %s", nextCheck.Format("2006-01-02 15:04:05")))
+		debug.FreeOSMemory()
 		time.Sleep(time.Duration(app.interval) * time.Minute)
 	}
 }
