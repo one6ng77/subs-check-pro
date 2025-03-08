@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+	"sync"
 	"time"
 
 	"log/slog"
@@ -19,67 +20,90 @@ import (
 func GetProxies() ([]map[string]any, error) {
 	slog.Info(fmt.Sprintf("当前设置订阅链接数量: %d", len(config.GlobalConfig.SubUrls)))
 
+	var wg sync.WaitGroup
+	proxyChan := make(chan map[string]any, 1)                                // 缓冲通道存储解析的代理
+	concurrentLimit := make(chan struct{}, config.GlobalConfig.SubUrlsReTry) // 限制并发数
+
+	// 启动收集结果的协程
 	var mihomoProxies []map[string]any
-	var con map[string]any
+	done := make(chan struct{})
+	go func() {
+		for proxy := range proxyChan {
+			mihomoProxies = append(mihomoProxies, proxy)
+		}
+		done <- struct{}{}
+	}()
+
+	// 启动工作协程
 	for _, subUrl := range config.GlobalConfig.SubUrls {
-		data, err := GetDateFromSubs(subUrl)
-		if err != nil {
-			slog.Error(fmt.Sprintf("获取订阅链接错误跳过: %v", err))
-			continue
-		}
-		slog.Debug(fmt.Sprintf("获取订阅链接: %s，数据长度: %d", subUrl, len(data)))
-		err = yaml.Unmarshal(data, &con)
-		if err != nil {
-			reg, _ := regexp.Compile("(ssr|ss|vmess|trojan|vless|hysteria|hy2|hysteria2)://")
-			// 如果不匹配则base64解码
-			if !reg.Match(data) {
-				data = []byte(parser.DecodeBase64(string(data)))
-			}
-			if reg.Match(data) {
-				// 使用 bufio.Scanner 逐行处理数据
-				scanner := bufio.NewScanner(strings.NewReader(string(data)))
-				for scanner.Scan() {
-					proxy := scanner.Text()
-					if proxy == "" {
-						continue
-					}
-					parseProxy, err := ParseProxy(proxy)
-					if err != nil {
-						slog.Debug(fmt.Sprintf("解析proxy错误: %s , %v", proxy, err))
-						continue
-					}
-					//如果proxy为空，则跳过
-					if parseProxy == nil {
-						continue
-					}
-					mihomoProxies = append(mihomoProxies, parseProxy)
-				}
-				if err := scanner.Err(); err != nil {
-					slog.Error(fmt.Sprintf("扫描数据时发生错误: %v", err))
-				}
-				// 跳出当前订阅
-				continue
-			}
-		}
-		proxyInterface, ok := con["proxies"]
-		if !ok || proxyInterface == nil {
-			slog.Error(fmt.Sprintf("订阅链接没有proxies: %s", subUrl))
-			continue
-		}
+		wg.Add(1)
+		concurrentLimit <- struct{}{} // 获取令牌
 
-		proxyList, ok := proxyInterface.([]any)
-		if !ok {
-			continue
-		}
+		go func(url string) {
+			defer wg.Done()
+			defer func() { <-concurrentLimit }() // 释放令牌
 
-		for _, proxy := range proxyList {
-			proxyMap, ok := proxy.(map[string]any)
+			data, err := GetDateFromSubs(url)
+			if err != nil {
+				slog.Error(fmt.Sprintf("获取订阅链接错误跳过: %v", err))
+				return
+			}
+			slog.Debug(fmt.Sprintf("获取订阅链接: %s，数据长度: %d", url, len(data)))
+
+			var con map[string]any
+			err = yaml.Unmarshal(data, &con)
+			if err != nil {
+				reg, _ := regexp.Compile("(ssr|ss|vmess|trojan|vless|hysteria|hy2|hysteria2)://")
+				if !reg.Match(data) {
+					data = []byte(parser.DecodeBase64(string(data)))
+				}
+				if reg.Match(data) {
+					scanner := bufio.NewScanner(strings.NewReader(string(data)))
+					for scanner.Scan() {
+						proxy := scanner.Text()
+						if proxy == "" {
+							continue
+						}
+						parseProxy, err := ParseProxy(proxy)
+						if err != nil {
+							slog.Debug(fmt.Sprintf("解析proxy错误: %s , %v", proxy, err))
+							continue
+						}
+						if parseProxy != nil {
+							proxyChan <- parseProxy
+						}
+					}
+					if err := scanner.Err(); err != nil {
+						slog.Error(fmt.Sprintf("扫描数据时发生错误: %v", err))
+					}
+					return
+				}
+			}
+
+			proxyInterface, ok := con["proxies"]
+			if !ok || proxyInterface == nil {
+				slog.Error(fmt.Sprintf("订阅链接没有proxies: %s", url))
+				return
+			}
+
+			proxyList, ok := proxyInterface.([]any)
 			if !ok {
-				continue
+				return
 			}
-			mihomoProxies = append(mihomoProxies, proxyMap)
-		}
+
+			for _, proxy := range proxyList {
+				if proxyMap, ok := proxy.(map[string]any); ok {
+					proxyChan <- proxyMap
+				}
+			}
+		}(subUrl)
 	}
+
+	// 等待所有工作协程完成
+	wg.Wait()
+	close(proxyChan)
+	<-done // 等待收集完成
+
 	return mihomoProxies, nil
 }
 
