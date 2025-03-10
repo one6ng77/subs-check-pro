@@ -240,6 +240,23 @@ func genUrls(data []byte) (*bytes.Buffer, error) {
 			return
 		}
 
+		if t == "ssr" {
+			// ssr://host:port:protocol:method:obfs:urlsafebase64pass/?obfsparam=urlsafebase64&protoparam=&remarks=urlsafebase64&group=urlsafebase64&udpport=0&uot=1
+			protocol, _ := jsonparser.GetString(value, "protocol")
+			cipher, _ := jsonparser.GetString(value, "cipher")
+			obfs, _ := jsonparser.GetString(value, "obfs")
+			password = base64.URLEncoding.EncodeToString([]byte(password))
+			name = base64.URLEncoding.EncodeToString([]byte(name))
+			obfsParam, _ := jsonparser.GetString(value, "obfs-param")
+			protoParam, _ := jsonparser.GetString(value, "protocol-param")
+
+			url := server + ":" + strconv.Itoa(int(port)) + ":" + protocol + ":" + cipher + ":" + obfs + ":" + password + "/?obfsparam=" + base64.URLEncoding.EncodeToString([]byte(obfsParam)) + "&protoparam=" + base64.URLEncoding.EncodeToString([]byte(protoParam)) + "&remarks=" + name
+
+			urls.WriteString("ssr://" + base64.StdEncoding.EncodeToString([]byte(url)))
+			urls.WriteByte('\n')
+			return
+		}
+
 		// 设置查询参数
 		q := url.Values{}
 
