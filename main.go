@@ -218,7 +218,7 @@ func (app *App) checkProxies() error {
 func main() {
 
 	app := NewApp()
-
+	slog.Info(fmt.Sprintf("当前版本: %s", CurrentCommit))
 	if err := app.Initialize(); err != nil {
 		slog.Error(fmt.Sprintf("初始化失败: %v", err))
 		os.Exit(1)

@@ -27,7 +27,7 @@ builds:
     flags:
       - -trimpath
     ldflags:
-      - -s -w
+      - -s -w -X main.CurrentCommit={{ .ShortCommit }}
 
 archives:
   - format: tar.gz

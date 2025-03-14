@@ -1,7 +1,10 @@
 FROM golang:alpine AS builder
 WORKDIR /app
 COPY . .
-RUN go mod tidy && go build -ldflags="-s -w" -o main .
+ARG GITHUB_SHA
+RUN echo "Building commit: ${GITHUB_SHA:0:7}" && \
+    go mod tidy && \
+    go build -ldflags="-s -w -X main.CurrentCommit=${GITHUB_SHA:0:7}" -o main .
 
 FROM alpine
 ENV TZ=Asia/Shanghai
