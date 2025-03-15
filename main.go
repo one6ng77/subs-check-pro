@@ -118,6 +118,9 @@ func (app *App) initConfigWatcher() error {
 	}
 
 	app.watcher = watcher
+
+	// 防抖定时器，防止vscode等软件先临时创建文件在覆盖，会产生两次write事件
+	var debounceTimer *time.Timer
 	go func() {
 		for {
 			select {
@@ -126,13 +129,20 @@ func (app *App) initConfigWatcher() error {
 					return
 				}
 				if event.Op&fsnotify.Write == fsnotify.Write {
-					slog.Info("配置文件发生变化，正在重新加载")
-					if err := app.loadConfig(); err != nil {
-						slog.Error(fmt.Sprintf("重新加载配置文件失败: %v", err))
-						return
+					// 如果定时器存在，重置它
+					if debounceTimer != nil {
+						debounceTimer.Stop()
 					}
-					// 更新检查间隔
-					app.interval = config.GlobalConfig.CheckInterval
+
+					// 创建新的定时器，延迟100ms执行
+					debounceTimer = time.AfterFunc(100*time.Millisecond, func() {
+						slog.Info("配置文件发生变化，正在重新加载")
+						if err := app.loadConfig(); err != nil {
+							slog.Error(fmt.Sprintf("重新加载配置文件失败: %v", err))
+							return
+						}
+						app.interval = config.GlobalConfig.CheckInterval
+					})
 				}
 			case err, ok := <-watcher.Errors:
 				if !ok {
