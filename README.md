@@ -131,8 +131,20 @@ docker run --name apprise \
 ```
 
 然后根据[Apprise wiki](https://github.com/caronc/apprise/wiki)编写发送通知的 URL，其中有关于如何设置每个通知渠道的详细文档和说明。例如，对于电报，您的 URL 是`tgram://botToken/chatId`，我在默认配置里边写了一些示例，可以当作参考
-
+```
+# 填写搭建的apprise API server 地址
+# https://notify.xxxx.us.kg/notify
+apprise-api-server: ""
+# 填写通知目标
+# 支持100+ 个通知渠道，详细格式请参照 https://github.com/caronc/apprise
+recipient-url: 
+  # telegram格式：tgram://<bot_token>/<chat_id>
+  # - tgram://xxxxxx/-1002149239223
+  # 钉钉格式：dingtalk://<secret>@<dd_token>/<chat_id>
+  # - dingtalk://xxxxxx@xxxxxxx/123123
+```
 ## 保存方法配置
+> 注意：选择保存方法时，记得更改 `save-method` 配置
 
 - 本地保存: 将结果保存到本地,默认保存到可执行文件目录下的 output 文件夹
 - r2: 将结果保存到 cloudflare r2 存储桶 [配置方法](./doc/r2.md)
@@ -140,10 +152,11 @@ docker run --name apprise \
 - webdav: 将结果保存到 webdav 服务器 [配置方法](./doc/webdav.md)
 
 ## 对外提供服务配置
+> 根据客户端的类型自己选择是否需要订阅转换
 - `http://127.0.0.1:8199/all.yaml` 返回yaml格式节点
 - `http://127.0.0.1:8199/all.txt` 返回base64格式节点
 
-可以直接将base64格式订阅放到V2rayN中或者Mihomo party当中
+可以直接将base64格式订阅放到`V2rayN`中或者`Mihomo Party的sub-store`当中
 ![subset](./doc/images/subset.jpeg)
 ![nodeinfo](./doc/images/nodeinfo.jpeg)
 
@@ -171,3 +184,6 @@ proxy-providers:
       interval: 60
     path: ./proxy_provider/ALL.yaml
 ```
+## 免责声明
+
+本工具仅用于学习和研究目的。使用者应自行承担使用风险，并遵守相关法律法规。

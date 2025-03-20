@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/beck-8/subs-check/config"
 )
@@ -51,9 +52,11 @@ func SendNotify(length int) {
 
 	for _, url := range config.GlobalConfig.RecipientUrl {
 		request := NotifyRequest{
-			URLs:  url,
-			Body:  fmt.Sprintf("检测到 %d 个节点可用", length),
-			Title: "节点检测完成",
+			URLs: url,
+			Body: fmt.Sprintf("✅ 可用节点：%d\n🕒 %s",
+				length,
+				GetCurrentTime()),
+			Title: "🔔 节点状态更新",
 		}
 		var err error
 		for i := 0; i < config.GlobalConfig.SubUrlsReTry; i++ {
@@ -67,4 +70,8 @@ func SendNotify(length int) {
 			slog.Error(fmt.Sprintf("%s 发送通知失败: %v", strings.SplitN(url, "://", 2)[0], err))
 		}
 	}
+}
+
+func GetCurrentTime() string {
+	return time.Now().Format("2006-01-02 15:04:05")
 }
