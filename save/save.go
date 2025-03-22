@@ -173,6 +173,7 @@ func (cs *ConfigSaver) saveCategoryBase64(category ProxyCategory) error {
 // 生成类似urls
 // hysteria2://b82f14be-9225-48cb-963e-0350c86c31d3@us2.interld123456789.com:32000/?insecure=1&sni=234224.1234567890spcloud.com&mport=32000-33000#美国hy2-2-联通电信
 // hysteria2://b82f14be-9225-48cb-963e-0350c86c31d3@sg1.interld123456789.com:32000/?insecure=1&sni=234224.1234567890spcloud.com&mport=32000-33000#新加坡hy2-1-移动优化
+// 被我拉成屎山了，因为从yaml解析成URI很累很累，这里很多不规范
 func genUrls(data []byte) (*bytes.Buffer, error) {
 	urls := bytes.NewBuffer(make([]byte, 0, len(data)*11/10))
 
@@ -288,7 +289,11 @@ func genUrls(data []byte) (*bytes.Buffer, error) {
 				}
 				switch k {
 				case "servername":
-					q.Set("sni", v)
+					if t == "hysteria" {
+						q.Set("peer", v)
+					} else {
+						q.Set("sni", v)
+					}
 				case "client-fingerprint":
 					q.Set("fp", v)
 				case "public-key":
@@ -310,6 +315,14 @@ func genUrls(data []byte) (*bytes.Buffer, error) {
 					q.Set("host", v)
 				case "grpc-service-name":
 					q.Set("serviceName", v)
+				// hysteria 用的
+				case "down":
+					q.Set("downmbps", v)
+				case "up":
+					q.Set("upmbps", v)
+				case "auth_str":
+					q.Set("auth", v)
+
 				default:
 					q.Set(k, v)
 				}
@@ -346,6 +359,14 @@ func genUrls(data []byte) (*bytes.Buffer, error) {
 			Host:     server + ":" + strconv.Itoa(int(port)),
 			RawQuery: q.Encode(),
 			Fragment: name,
+		}
+		if t == "hysteria" {
+			u = url.URL{
+				Scheme:   t,
+				Host:     server + ":" + strconv.Itoa(int(port)),
+				RawQuery: q.Encode(),
+				Fragment: name,
+			}
 		}
 		urls.WriteString(u.String())
 		urls.WriteByte('\n')
