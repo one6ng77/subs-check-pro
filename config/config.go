@@ -30,6 +30,7 @@ type Config struct {
 	OutputDir          string   `yaml:"output-dir"`
 	AppriseApiServer   string   `yaml:"apprise-api-server"`
 	RecipientUrl       []string `yaml:"recipient-url"`
+	SubStorePort       string   `yaml:"sub-store-port"`
 }
 
 var GlobalConfig = &Config{

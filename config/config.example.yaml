@@ -49,6 +49,10 @@ recipient-url:
   # 钉钉格式：dingtalk://<secret>@<dd_token>/<chat_id>
   # - dingtalk://xxxxxx@xxxxxxx/123123
 
+# sub-store的启动端口，注意没有冒号(:)，为空则不启动sub-store
+# sub-store-port: 8299
+sub-store-port: 
+
 # mihomo api url(测试完成后自动更新mihomo订阅)
 mihomo-api-url: ""
 
