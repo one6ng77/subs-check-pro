@@ -14,6 +14,7 @@ import (
 	"github.com/beck-8/subs-check/config"
 	"github.com/beck-8/subs-check/proxy/parser"
 	"github.com/beck-8/subs-check/save/method"
+	"github.com/beck-8/subs-check/utils"
 	"github.com/buger/jsonparser"
 	"gopkg.in/yaml.v3"
 )
@@ -141,6 +142,7 @@ func (cs *ConfigSaver) saveCategory(category ProxyCategory) error {
 	if err := cs.saveMethod(yamlData, category.Name); err != nil {
 		return fmt.Errorf("保存yaml %s 失败: %w", category.Name, err)
 	}
+	utils.UpdateSubStore(yamlData)
 
 	return nil
 }

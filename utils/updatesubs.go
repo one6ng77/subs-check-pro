@@ -59,7 +59,7 @@ func makeRequest(client httpClient, method, url string) ([]byte, error) {
 
 func UpdateSubs() {
 	if config.GlobalConfig.MihomoApiUrl == "" {
-		slog.Warn("未配置 MihomoApiUrl，跳过更新")
+		// slog.Warn("未配置 MihomoApiUrl，跳过更新")
 		return
 	}
 
