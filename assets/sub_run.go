@@ -33,6 +33,8 @@ func startSubStore() error {
 	if err != nil {
 		return err
 	}
+	// 处理用户写相对路径的问题
+	saver.OutputPath = filepath.Join(saver.BasePath, saver.OutputPath)
 	nodeName := "node"
 	if runtime.GOOS == "windows" {
 		nodeName += ".exe"
@@ -58,6 +60,7 @@ func startSubStore() error {
 
 	// 运行 JavaScript 文件
 	cmd := exec.Command(nodePath, jsPath)
+	// js会在运行目录释放依赖文件
 	cmd.Dir = saver.OutputPath
 	cmd.Stdout = logWriter
 	cmd.Stderr = logWriter
