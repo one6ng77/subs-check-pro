@@ -37,6 +37,8 @@ func startSubStore() error {
 	if runtime.GOOS == "windows" {
 		nodeName += ".exe"
 	}
+
+	os.MkdirAll(saver.OutputPath, 0755)
 	nodePath := filepath.Join(saver.OutputPath, nodeName)
 	jsPath := filepath.Join(saver.OutputPath, "sub-store.bundle.js")
 	logPath := filepath.Join(saver.OutputPath, "sub-store.log")
