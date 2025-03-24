@@ -1,5 +1,5 @@
-//go:build windows && amr64
-// +build windows,amr64
+//go:build windows && arm64
+// +build windows,arm64
 
 package assets
 
@@ -7,5 +7,5 @@ import (
 	_ "embed"
 )
 
-//go:embed node_windows_amr64.zst
+//go:embed node_windows_arm64.zst
 var EmbeddedNode []byte
