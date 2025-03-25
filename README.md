@@ -270,6 +270,9 @@ proxy-providers:
       interval: 60
     path: ./proxy_provider/ALL.yaml
 ```
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=beck-8/subs-check&type=Date)](https://www.star-history.com/#beck-8/subs-check&Date)
 ## 免责声明
 
 本工具仅用于学习和研究目的。使用者应自行承担使用风险，并遵守相关法律法规。
