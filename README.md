@@ -179,19 +179,18 @@ recipient-url:
 > 注意：选择保存方法时，记得更改 `save-method` 配置  
 > 如果上边部署了`worker.js`，下方使用即可，无需重复部署
 
+> 现在会保存两个文件，一个只有节点的`all.yaml`，另一个带有分流规则的`mihomo.yaml`
+
 - 本地保存: 将结果保存到本地,默认保存到可执行文件目录下的 output 文件夹
 - r2: 将结果保存到 cloudflare r2 存储桶 [配置方法](./doc/r2.md)
 - gist: 将结果保存到 github gist [配置方法](./doc/gist.md)
 - webdav: 将结果保存到 webdav 服务器 [配置方法](./doc/webdav.md)
 
-<!-- ## 对外提供服务配置
+## 对外提供服务
 > 根据客户端的类型自己选择是否需要订阅转换
 - `http://127.0.0.1:8199/all.yaml` 返回yaml格式节点
-- `http://127.0.0.1:8199/all.txt` 返回base64格式节点
+- `http://127.0.0.1:8199/mihomo.yaml` 返回带分流规则的mihomo订阅
 
-可以直接将base64格式订阅放到`V2rayN`中或者`Mihomo Party的sub-store`当中
-![subset](./doc/images/subset.jpeg)
-![nodeinfo](./doc/images/nodeinfo.jpeg) -->
 
 ## 订阅使用方法
 > 内置了Sub-Store程序，可以生成任意类型的链接，设置端口才能打开此功能
@@ -244,6 +243,8 @@ http://127.0.0.1:8299/api/file/mihomo
 > 这个依赖github上的yaml文件进行覆写  
 > 默认使用: `https://slink.ltd/https://raw.githubusercontent.com/mihomo-party-org/override-hub/main/yaml/ACL4SSR_Online_Full.yaml`  
 > 如果遇到无法下载或者想使用其他格式，更改配置中的`mihomo-overwrite-url`即可
+
+> 此处与上方的`http://127.0.0.1:8199/mihomo.yaml`有什么区别？上方的是基于此链接download下来的文件，主要用于保存到 `local` `r2` `gist` `webdav` 使用，所以你使用哪个都可以。唯一的区别在于，**此链接会根据你配置的覆写URL，实时生成带分流规则的文件**。
 
 如果你还有什么其他的需求，使用上方的通用订阅自己处理，或者学习[sub-store](https://github.com/sub-store-org/sub-store-docs)中的文件管理，可以写任意插件，功能真的很强大！！！
 
