@@ -157,7 +157,7 @@ func (cs *ConfigSaver) saveCategory(category ProxyCategory) error {
 			return fmt.Errorf("保存 %s 失败: %w", category.Name, err)
 		}
 		// 只在 all.yaml 和 local时，更新substore
-		if config.GlobalConfig.SaveMethod == "local" {
+		if config.GlobalConfig.SaveMethod == "local" && config.GlobalConfig.SubStorePort != "" {
 			utils.UpdateSubStore(yamlData)
 		}
 		return nil
