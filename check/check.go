@@ -165,7 +165,7 @@ func (pc *ProxyChecker) checkProxy(proxy map[string]any) *Result {
 		return nil
 	}
 
-	if config.GlobalConfig.RenameNode && config.GlobalConfig.MediaCheck {
+	if config.GlobalConfig.MediaCheck {
 		// 执行其他平台检测
 		openai, _ := platfrom.CheckOpenai(httpClient.Client)
 		youtube, _ := platfrom.CheckYoutube(httpClient.Client)
@@ -233,21 +233,21 @@ func (pc *ProxyChecker) updateProxyName(res *Result, speed int) {
 		res.Proxy["name"] = strings.Split(strings.TrimSpace(res.Proxy["name"].(string)), " | ⬇️ ")[0] + " | ⬇️ " + speedStr
 	}
 
-	if config.GlobalConfig.RenameNode && config.GlobalConfig.MediaCheck {
+	if config.GlobalConfig.MediaCheck {
 		if ipRisk != "" {
 			res.Proxy["name"] = res.Proxy["name"].(string) + " |" + ipRisk
 		}
 		if res.Netflix {
-			res.Proxy["name"] = strings.TrimSpace(res.Proxy["name"].(string)) + "|Netflix"
+			res.Proxy["name"] = strings.ReplaceAll(strings.TrimSpace(res.Proxy["name"].(string)), "|Netflix", "") + "|Netflix"
 		}
 		if res.Disney {
-			res.Proxy["name"] = strings.TrimSpace(res.Proxy["name"].(string)) + "|Disney"
+			res.Proxy["name"] = strings.ReplaceAll(strings.TrimSpace(res.Proxy["name"].(string)), "|Disney", "") + "|Disney"
 		}
 		if res.Youtube {
-			res.Proxy["name"] = strings.TrimSpace(res.Proxy["name"].(string)) + "|Youtube"
+			res.Proxy["name"] = strings.ReplaceAll(strings.TrimSpace(res.Proxy["name"].(string)), "|Youtube", "") + "|Youtube"
 		}
 		if res.Openai {
-			res.Proxy["name"] = strings.TrimSpace(res.Proxy["name"].(string)) + "|Openai"
+			res.Proxy["name"] = strings.ReplaceAll(strings.TrimSpace(res.Proxy["name"].(string)), "|Openai", "") + "|Openai"
 		}
 	}
 
