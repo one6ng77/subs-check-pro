@@ -60,6 +60,9 @@ func startSubStore() error {
 		}
 	}
 
+	// 如果subs-check内存问题退出，会导致node二进制损坏，启动的node变成僵尸，所以删一遍
+	os.Remove(nodePath)
+	os.Remove(jsPath)
 	if err := decodeZstd(nodePath, jsPath); err != nil {
 		killNode()
 		return err

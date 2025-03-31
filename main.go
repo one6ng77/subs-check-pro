@@ -86,8 +86,8 @@ func (app *App) Initialize() error {
 				return
 			}
 			for {
-				checkMemory(uint64(MemoryLimit))
 				time.Sleep(30 * time.Second)
+				checkMemory(uint64(MemoryLimit))
 			}
 		}()
 	}
