@@ -49,7 +49,7 @@
     - [ ] 其他
 - [x] 已知从clash格式转base64时vmess节点会丢失。因为太麻烦了，我不想处理了。
 - [ ] 可能在某些平台、某些环境下长时间运行还是会有内存溢出的问题
-    - [x] 新增内存限制环境变量，用于限制内存使用，超出会自动重启
+    - [x] 新增内存限制环境变量，用于限制内存使用，超出会自动重启（docker用户请使用docker的内存限制）
       - [x] 环境变量 `SUB_CHECK_MEM_LIMIT=500M` `SUB_CHECK_MEM_LIMIT=1G`
       - [x] 重启后的进程无法使用`ctrl c`退出，只能关闭终端
     - [ ] 彻底解决
@@ -101,14 +101,14 @@ speed-test-url: https://custom-domain/speedtest?bytes=104857600
 speed-test-url: https://custom-domain/speedtest?bytes=1073741824
 ```
 ### docker运行
-> 如果使用新功能sub-store，需要额外增加端口如 `-p 8299:8299`
+> 如果需要限制内存，请使用docker自带的内存限制参数 `--memory="500m"`
 
 ```bash
-docker run -d --name subs-check -p 8199:8199 -v ./config:/app/config  -v ./output:/app/output --restart always ghcr.io/beck-8/subs-check:latest
+docker run -d --name subs-check -p 8199:8199 -p 8299:8299 -v ./config:/app/config  -v ./output:/app/output --restart always ghcr.io/beck-8/subs-check:latest
 ```
 ```bash
 # 如果想使用代理，加上环境变量，如
-docker run -d --name subs-check -p 8199:8199  -e HTTP_PROXY=http://192.168.1.1:7890 -e HTTPS_PROXY=http://192.168.1.1:7890 -v ./config:/app/config  -v ./output:/app/output --restart always ghcr.io/beck-8/subs-check:latest
+docker run -d --name subs-check -p 8199:8199 -p 8299:8299 -e HTTP_PROXY=http://192.168.1.1:7890 -e HTTPS_PROXY=http://192.168.1.1:7890 -v ./config:/app/config  -v ./output:/app/output --restart always ghcr.io/beck-8/subs-check:latest
 ```
 
 ### docker-compose
@@ -119,12 +119,13 @@ services:
   mihomo-check:
     image: ghcr.io/beck-8/subs-check:latest
     container_name: subs-check
+    # mem_limit: 500m
     volumes:
       - ./config:/app/config
       - ./output:/app/output
     ports:
       - "8199:8199"
-      # - "8299:8299"
+      - "8299:8299"
     environment:
       - TZ=Asia/Shanghai
       # 是否使用代理

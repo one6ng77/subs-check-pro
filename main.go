@@ -112,7 +112,7 @@ func checkMemory(MemoryLimit uint64) {
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			cmd.Start() // 让新进程启动
-			slog.Warn("因为内存问题启动了新进程，如果需要关闭请关闭此窗口")
+			slog.Warn("因为内存问题启动了新进程，二进制用户如果需要关闭请关闭此窗口/终端")
 		}
 
 		// 退出当前进程
