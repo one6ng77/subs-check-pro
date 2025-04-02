@@ -52,6 +52,8 @@ recipient-url:
   # - tgram://xxxxxx/-1002149239223
   # 钉钉格式：dingtalk://<secret>@<dd_token>/<chat_id>
   # - dingtalk://xxxxxx@xxxxxxx/123123
+# 自定义通知标题
+notify-title: "🔔 节点状态更新"
 
 # sub-store的启动端口，为空则不启动sub-store
 # 更新需重启程序，不可监听局域网IP，只有三种写法 :8299, 127.0.0.1:8299, 0.0.0.0:8299

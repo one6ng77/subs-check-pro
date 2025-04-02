@@ -59,12 +59,12 @@ func startSubStore() error {
 			slog.Debug("Sub-store service already killed", "pid", pid)
 		}
 	}
+	defer killNode()
 
 	// 如果subs-check内存问题退出，会导致node二进制损坏，启动的node变成僵尸，所以删一遍
 	os.Remove(nodePath)
 	os.Remove(jsPath)
 	if err := decodeZstd(nodePath, jsPath); err != nil {
-		killNode()
 		return err
 	}
 
@@ -102,7 +102,6 @@ func startSubStore() error {
 	}
 
 	if err := cmd.Start(); err != nil {
-		killNode()
 		return fmt.Errorf("启动 sub-store 失败: %w", err)
 	}
 

@@ -30,6 +30,7 @@ type Config struct {
 	OutputDir          string   `yaml:"output-dir"`
 	AppriseApiServer   string   `yaml:"apprise-api-server"`
 	RecipientUrl       []string `yaml:"recipient-url"`
+	NotifyTitle        string   `yaml:"notify-title"`
 	SubStorePort       string   `yaml:"sub-store-port"`
 	MihomoOverwriteUrl string   `yaml:"mihomo-overwrite-url"`
 	MediaCheck         bool     `yaml:"media-check"`
@@ -38,6 +39,7 @@ type Config struct {
 var GlobalConfig = &Config{
 	// 新增配置，给未更改配置文件的用户一个默认值
 	ListenPort:         ":8199",
+	NotifyTitle:        "🔔 节点状态更新",
 	MihomoOverwriteUrl: "https://slink.ltd/https://raw.githubusercontent.com/mihomo-party-org/override-hub/main/yaml/ACL4SSR_Online_Full.yaml",
 }
 

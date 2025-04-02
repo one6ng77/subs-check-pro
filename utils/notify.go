@@ -56,7 +56,7 @@ func SendNotify(length int) {
 			Body: fmt.Sprintf("✅ 可用节点：%d\n🕒 %s",
 				length,
 				GetCurrentTime()),
-			Title: "🔔 节点状态更新",
+			Title: config.GlobalConfig.NotifyTitle,
 		}
 		var err error
 		for i := 0; i < config.GlobalConfig.SubUrlsReTry; i++ {
