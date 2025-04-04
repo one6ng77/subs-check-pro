@@ -39,6 +39,8 @@ media-check: false
 keep-success-proxies: false
 
 # 保存几个成功的节点，为0代表不限制 
+# 如果你的并发数量超过这个参数，那么成功的结果可能会大于这个数值
+# success-limit <= success <= success-limit+concurrent
 success-limit: 0
 
 # 输出目录
