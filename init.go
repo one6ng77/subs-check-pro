@@ -6,9 +6,7 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	"os"
-	"runtime"
 	"strings"
-	"time"
 
 	"github.com/lmittmann/tint"
 	mihomoLog "github.com/metacubex/mihomo/log"
@@ -51,44 +49,6 @@ func init() {
 			}
 		}()
 	}
-	// 添加内存使用情况监控
-	if strings.ToLower(os.Getenv("SUB_CHECK_MEM_MONITOR")) != "" {
-		go func() {
-			var m runtime.MemStats
-			ticker := time.NewTicker(30 * time.Second)
-			defer ticker.Stop()
-
-			for range ticker.C {
-				runtime.ReadMemStats(&m)
-				slog.Info("内存使用情况",
-					"Alloc", formatBytes(m.Alloc),
-					"TotalAlloc", formatBytes(m.TotalAlloc),
-					"Sys", formatBytes(m.Sys),
-					"HeapAlloc", formatBytes(m.HeapAlloc),
-					"HeapSys", formatBytes(m.HeapSys),
-					"HeapInuse", formatBytes(m.HeapInuse),
-					"HeapIdle", formatBytes(m.HeapIdle),
-					"HeapReleased", formatBytes(m.HeapReleased),
-					"HeapObjects", m.HeapObjects,
-					"StackInuse", formatBytes(m.StackInuse),
-					"StackSys", formatBytes(m.StackSys),
-					"MSpanInuse", formatBytes(m.MSpanInuse),
-					"MSpanSys", formatBytes(m.MSpanSys),
-					"MCacheInuse", formatBytes(m.MCacheInuse),
-					"MCacheSys", formatBytes(m.MCacheSys),
-					"BuckHashSys", formatBytes(m.BuckHashSys),
-					"GCSys", formatBytes(m.GCSys),
-					"OtherSys", formatBytes(m.OtherSys),
-					"NextGC", formatBytes(m.NextGC),
-					"LastGC", time.Unix(0, int64(m.LastGC)).Format("15:04:05"),
-					"PauseTotalNs", m.PauseTotalNs,
-					"NumGC", m.NumGC,
-					"NumForcedGC", m.NumForcedGC,
-					"GCCPUFraction", m.GCCPUFraction,
-				)
-			}
-		}()
-	}
 }
 
 func getLogLevel() slog.Level {
@@ -105,18 +65,4 @@ func getLogLevel() slog.Level {
 	default:
 		return slog.LevelInfo // 默认 INFO 级别
 	}
-}
-
-// formatBytes 将字节数格式化为人类可读的形式
-func formatBytes(bytes uint64) string {
-	const unit = 1024
-	if bytes < unit {
-		return fmt.Sprintf("%d B", bytes)
-	}
-	div, exp := uint64(unit), 0
-	for n := bytes / unit; n >= unit; n /= unit {
-		div *= unit
-		exp++
-	}
-	return fmt.Sprintf("%.2f %cB", float64(bytes)/float64(div), "KMGTPE"[exp])
 }
