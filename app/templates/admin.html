@@ -574,6 +574,13 @@
         updateStatus();
         loadLogs();
         
+        // 检查API密钥
+        const apiKey = localStorage.getItem('apiKey');
+        if (!apiKey) {
+            alert('请先输入API密钥以使用本系统');
+            document.getElementById('apiKey').focus();
+        }
+        
         // 定时刷新
         setInterval(loadLogs, 10000);
         setInterval(updateStatus, 5000);
