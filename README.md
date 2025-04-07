@@ -195,9 +195,9 @@ recipient-url:
 
 ## 对外提供服务
 > 根据客户端的类型自己选择是否需要订阅转换
-- `http://127.0.0.1:8199/all.yaml` 返回yaml格式节点
-- `http://127.0.0.1:8199/mihomo.yaml` 返回带分流规则的mihomo订阅
-- `http://127.0.0.1:8199/base64.txt` 返回base64格式的订阅
+- `http://127.0.0.1:8199/sub/all.yaml` 返回yaml格式节点
+- `http://127.0.0.1:8199/sub/mihomo.yaml` 返回带分流规则的mihomo订阅
+- `http://127.0.0.1:8199/sub/base64.txt` 返回base64格式的订阅
 
 
 ## 订阅使用方法
