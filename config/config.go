@@ -36,6 +36,7 @@ type Config struct {
 	MediaCheck         bool     `yaml:"media-check"`
 	SuccessLimit       int32    `yaml:"success-limit"`
 	NodePrefix         string   `yaml:"node-prefix"`
+	APIKey             string   `yaml:"api-key"`
 }
 
 var GlobalConfig = &Config{
@@ -43,6 +44,7 @@ var GlobalConfig = &Config{
 	ListenPort:         ":8199",
 	NotifyTitle:        "🔔 节点状态更新",
 	MihomoOverwriteUrl: "http://127.0.0.1:8199/ACL4SSR_Online_Full.yaml",
+	// APIKey:             "123456",
 }
 
 //go:embed config.example.yaml

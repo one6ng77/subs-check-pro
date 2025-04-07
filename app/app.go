@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"path/filepath"
 	"runtime"
 	"runtime/debug"
 	"sync/atomic"
@@ -161,4 +162,8 @@ func (app *App) checkProxies() error {
 	utils.SendNotify(len(results))
 	utils.UpdateSubs()
 	return nil
+}
+
+func TempLog() string {
+	return filepath.Join(os.TempDir(), "subs-check.log")
 }

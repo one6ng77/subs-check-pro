@@ -7,9 +7,9 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	"os"
-	"path/filepath"
 	"strings"
 
+	"github.com/beck-8/subs-check/app"
 	"github.com/lmittmann/tint"
 	mihomoLog "github.com/metacubex/mihomo/log"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -27,10 +27,9 @@ func init() {
 	// 获取日志级别
 	logLevel := getLogLevel()
 
-	TempLog = filepath.Join(os.TempDir(), "subs-check.log")
 	// 配置日志文件
 	fileLogger := &lumberjack.Logger{
-		Filename:   TempLog,
+		Filename:   app.TempLog(),
 		MaxSize:    10,
 		MaxBackups: 3,
 		MaxAge:     7,

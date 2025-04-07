@@ -6,10 +6,14 @@ require (
 	github.com/fsnotify/fsnotify v1.8.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/metacubex/mihomo v1.19.5-0.20250404130554-190047c8c0e1
+	github.com/nxadm/tail v1.4.11
 	gopkg.in/yaml.v3 v3.0.1
 )
 
-require github.com/metacubex/bart v0.19.0 // indirect
+require (
+	github.com/metacubex/bart v0.19.0 // indirect
+	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
+)
 
 require (
 	github.com/3andne/restls-client-go v0.1.6 // indirect
