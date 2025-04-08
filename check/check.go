@@ -48,6 +48,10 @@ type ProxyChecker struct {
 	tasks       chan map[string]any
 }
 
+var Progress atomic.Uint32
+var Available atomic.Uint32
+var ProxyCount atomic.Uint32
+
 var ForceClose atomic.Bool
 
 // NewProxyChecker 创建新的检测器实例
@@ -57,6 +61,9 @@ func NewProxyChecker(proxyCount int) *ProxyChecker {
 		threadCount = proxyCount
 	}
 
+	ProxyCount.Store(uint32(proxyCount))
+	Available.Store(0)
+	Progress.Store(0)
 	return &ProxyChecker{
 		results:     make([]Result, 0),
 		proxyCount:  proxyCount,
@@ -325,10 +332,12 @@ func (pc *ProxyChecker) showProgress(done chan bool) {
 // 辅助方法
 func (pc *ProxyChecker) incrementProgress() {
 	atomic.AddInt32(&pc.progress, 1)
+	Progress.Add(1)
 }
 
 func (pc *ProxyChecker) incrementAvailable() {
 	atomic.AddInt32(&pc.available, 1)
+	Available.Add(1)
 }
 
 // distributeProxies 分发代理任务

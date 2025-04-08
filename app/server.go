@@ -137,7 +137,10 @@ func (app *App) updateConfig(c *gin.Context) {
 // getStatus 获取应用状态
 func (app *App) getStatus(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-		"checking": app.checking.Load(),
+		"checking":   app.checking.Load(),
+		"proxyCount": check.ProxyCount.Load(),
+		"available":  check.Available.Load(),
+		"progress":   check.Progress.Load(),
 	})
 }
 
