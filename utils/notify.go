@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
 	"strings"
@@ -36,7 +37,8 @@ func Notify(request NotifyRequest) error {
 
 	// 检查响应状态码
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("通知失败，状态码: %d", resp.StatusCode)
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("通知失败，状态码: %d, 响应: %s", resp.StatusCode, string(body))
 	}
 
 	return nil
