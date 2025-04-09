@@ -18,6 +18,15 @@
 ## 填入名称和后端地址保存
 ![步骤三](./images/sub-store3.png)
 
+## 正常应该会有错误（这是因为浏览器不允许https的前端访问http的后端）
+
+> **chrome内核浏览器的解决方案** 其他浏览器也差不多是这种问题，自行谷歌解决方案
+
+> 小一佬提供的解决方案： HTTPS 前端无法请求非本地的 HTTP 后端(部分浏览器上也无法访问本地 HTTP 后端). 请配置反代或在局域网自建 HTTP 前端.
+
+![](./images/sub-store7.png)
+![](./images/sub-store8.png)
+![](./images/sub-store9.png)
 ## 切换到你添加的后端
 ![步骤四](./images/sub-store4.png)
 
