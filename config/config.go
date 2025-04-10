@@ -6,6 +6,7 @@ type Config struct {
 	PrintProgress      bool     `yaml:"print-progress"`
 	Concurrent         int      `yaml:"concurrent"`
 	CheckInterval      int      `yaml:"check-interval"`
+	CronExpression     string   `yaml:"cron-expression"`
 	SpeedTestUrl       string   `yaml:"speed-test-url"`
 	DownloadTimeout    int      `yaml:"download-timeout"`
 	MinSpeed           int      `yaml:"min-speed"`

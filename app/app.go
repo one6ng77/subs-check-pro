@@ -18,6 +18,7 @@ import (
 	"github.com/beck-8/subs-check/save"
 	"github.com/beck-8/subs-check/utils"
 	"github.com/fsnotify/fsnotify"
+	"github.com/robfig/cron/v3"
 )
 
 // App 结构体用于管理应用程序状态
@@ -28,6 +29,8 @@ type App struct {
 	checkChan  chan struct{} // 触发检测的通道
 	checking   atomic.Bool   // 检测状态标志
 	ticker     *time.Ticker
+	done       chan struct{} // 用于结束ticker goroutine的信号
+	cron       *cron.Cron    // crontab调度器
 }
 
 // New 创建新的应用实例
@@ -38,6 +41,7 @@ func New() *App {
 	return &App{
 		configPath: *configPath,
 		checkChan:  make(chan struct{}),
+		done:       make(chan struct{}),
 	}
 }
 
@@ -90,23 +94,78 @@ func (app *App) Run() {
 		if app.ticker != nil {
 			app.ticker.Stop()
 		}
+		if app.cron != nil {
+			app.cron.Stop()
+		}
 	}()
 
 	slog.Info(fmt.Sprintf("进度展示: %v", config.GlobalConfig.PrintProgress))
 
-	// 初始化定时器
-	app.ticker = time.NewTicker(time.Duration(app.interval) * time.Minute)
+	// 设置初始定时器模式
+	app.setTimer()
+
 	// 首次立即执行检测
 	app.triggerCheck()
 
-	for {
-		select {
-		case <-app.ticker.C:
-			go app.triggerCheck()
-		case <-app.checkChan:
-			go app.triggerCheck()
-		}
+	// 在主循环中处理手动触发
+	for range app.checkChan {
+		go app.triggerCheck()
 	}
+}
+
+// setTimer 根据配置设置定时器
+func (app *App) setTimer() {
+	// 停止现有定时器
+	if app.ticker != nil {
+		app.ticker.Stop()
+		close(app.done)                // 发送停止信号
+		app.done = make(chan struct{}) // 创建新通道
+		app.ticker = nil
+	}
+
+	// 停止现有cron
+	if app.cron != nil {
+		app.cron.Stop()
+		app.cron = nil
+	}
+
+	// 检查是否设置了cron表达式
+	if config.GlobalConfig.CronExpression != "" {
+		slog.Info(fmt.Sprintf("使用cron表达式: %s", config.GlobalConfig.CronExpression))
+		app.cron = cron.New()
+		_, err := app.cron.AddFunc(config.GlobalConfig.CronExpression, func() {
+			app.triggerCheck()
+		})
+		if err != nil {
+			slog.Error(fmt.Sprintf("cron表达式 '%s' 解析失败: %v，将使用检查间隔时间",
+				config.GlobalConfig.CronExpression, err))
+			// 使用间隔时间
+			app.useIntervalTimer()
+		} else {
+			app.cron.Start()
+		}
+	} else {
+		// 使用间隔时间
+		app.useIntervalTimer()
+	}
+}
+
+// useIntervalTimer 使用间隔时间模式运行
+func (app *App) useIntervalTimer() {
+	// 初始化定时器
+	app.ticker = time.NewTicker(time.Duration(app.interval) * time.Minute)
+	done := app.done
+	// 启动一个goroutine监听定时器事件
+	go func() {
+		for {
+			select {
+			case <-app.ticker.C:
+				app.triggerCheck()
+			case <-done:
+				return // 收到停止信号，退出goroutine
+			}
+		}
+	}()
 }
 
 // TriggerCheck 供外部调用的触发检测方法
@@ -133,12 +192,20 @@ func (app *App) triggerCheck() {
 		os.Exit(1)
 	}
 
-	// 检测完成后重置定时器
+	// 检测完成后显示下次检查时间
 	if app.ticker != nil {
+		// 使用间隔时间模式
 		app.ticker.Reset(time.Duration(app.interval) * time.Minute)
+		nextCheck := time.Now().Add(time.Duration(app.interval) * time.Minute)
+		slog.Info(fmt.Sprintf("下次检查时间: %s", nextCheck.Format("2006-01-02 15:04:05")))
+	} else if app.cron != nil {
+		// 使用cron模式
+		entries := app.cron.Entries()
+		if len(entries) > 0 {
+			nextTime := entries[0].Next
+			slog.Info(fmt.Sprintf("下次检查时间: %s", nextTime.Format("2006-01-02 15:04:05")))
+		}
 	}
-	nextCheck := time.Now().Add(time.Duration(app.interval) * time.Minute)
-	slog.Info(fmt.Sprintf("下次检查时间: %s", nextCheck.Format("2006-01-02 15:04:05")))
 	debug.FreeOSMemory()
 }
 
