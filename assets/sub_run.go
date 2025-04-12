@@ -79,6 +79,10 @@ func startSubStore() error {
 	}
 	defer logWriter.Close()
 
+	// 支持自定义node二进制文件路径，可兼容更多的设备
+	if nodeBinPath := os.Getenv("NODEBIN_PATH"); nodeBinPath != "" {
+		nodePath = nodeBinPath
+	}
 	// 运行 JavaScript 文件
 	cmd := exec.Command(nodePath, jsPath)
 	// js会在运行目录释放依赖文件
