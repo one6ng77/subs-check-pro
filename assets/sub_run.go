@@ -140,6 +140,11 @@ func startSubStore() error {
 
 	// 增加body限制，默认1M
 	cmd.Env = append(cmd.Env, "SUB_STORE_BODY_JSON_LIMIT=10mb")
+	// 增加自定义访问路径
+	if config.GlobalConfig.SubStorePath != "" {
+		cmd.Env = append(cmd.Env, fmt.Sprintf("SUB_STORE_FRONTEND_BACKEND_PATH=%s", config.GlobalConfig.SubStorePath))
+		cmd.Env = append(cmd.Env, "SUB_STORE_BACKEND_MERGE=1")
+	}
 
 	if err := cmd.Start(); err != nil {
 		return fmt.Errorf("启动 sub-store 失败: %w", err)

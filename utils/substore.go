@@ -61,6 +61,9 @@ const (
 // 用来判断用户是否在运行时更改了覆写订阅的url
 var mihomoOverwriteUrl string
 
+// 基础URL配置
+var BaseURL string
+
 func UpdateSubStore(yamlData []byte) {
 	// 调试的时候等一等node启动
 	if os.Getenv("SUB_CHECK_SKIP") != "" && config.GlobalConfig.SubStorePort != "" {
@@ -68,6 +71,12 @@ func UpdateSubStore(yamlData []byte) {
 	}
 	// 处理用户输入的格式
 	config.GlobalConfig.SubStorePort = formatPort(config.GlobalConfig.SubStorePort)
+	// 设置基础URL
+	BaseURL = fmt.Sprintf("http://127.0.0.1%s", config.GlobalConfig.SubStorePort)
+	if config.GlobalConfig.SubStorePath != "" {
+		BaseURL = fmt.Sprintf("%s%s", BaseURL, config.GlobalConfig.SubStorePath)
+	}
+
 	if err := checkSub(); err != nil {
 		slog.Debug(fmt.Sprintf("检查sub配置文件失败: %v, 正在创建中...", err))
 		if err := createSub(yamlData); err != nil {
@@ -102,7 +111,7 @@ func UpdateSubStore(yamlData []byte) {
 	slog.Info("substore更新完成")
 }
 func checkSub() error {
-	resp, err := http.Get(fmt.Sprintf("http://127.0.0.1%s/api/sub/%s", config.GlobalConfig.SubStorePort, SubName))
+	resp, err := http.Get(fmt.Sprintf("%s/api/sub/%s", BaseURL, SubName))
 	if err != nil {
 		return err
 	}
@@ -138,7 +147,7 @@ func createSub(data []byte) error {
 	if err != nil {
 		return err
 	}
-	resp, err := http.Post(fmt.Sprintf("http://127.0.0.1%s/api/subs", config.GlobalConfig.SubStorePort), "application/json", bytes.NewBuffer(json))
+	resp, err := http.Post(fmt.Sprintf("%s/api/subs", BaseURL), "application/json", bytes.NewBuffer(json))
 	if err != nil {
 		return err
 	}
@@ -167,7 +176,7 @@ func updateSub(data []byte) error {
 		return err
 	}
 	req, err := http.NewRequest(http.MethodPatch,
-		fmt.Sprintf("http://127.0.0.1%s/api/sub/%s", config.GlobalConfig.SubStorePort, SubName),
+		fmt.Sprintf("%s/api/sub/%s", BaseURL, SubName),
 		bytes.NewBuffer(json))
 	if err != nil {
 		return err
@@ -185,7 +194,7 @@ func updateSub(data []byte) error {
 }
 
 func checkfile() error {
-	resp, err := http.Get(fmt.Sprintf("http://127.0.0.1%s/api/wholeFile/%s", config.GlobalConfig.SubStorePort, MihomoName))
+	resp, err := http.Get(fmt.Sprintf("%s/api/wholeFile/%s", BaseURL, MihomoName))
 	if err != nil {
 		return err
 	}
@@ -227,7 +236,7 @@ func createfile() error {
 	if err != nil {
 		return err
 	}
-	resp, err := http.Post(fmt.Sprintf("http://127.0.0.1%s/api/files", config.GlobalConfig.SubStorePort), "application/json", bytes.NewBuffer(json))
+	resp, err := http.Post(fmt.Sprintf("%s/api/files", BaseURL), "application/json", bytes.NewBuffer(json))
 	if err != nil {
 		return err
 	}
@@ -262,7 +271,7 @@ func updatefile() error {
 		return err
 	}
 	req, err := http.NewRequest(http.MethodPatch,
-		fmt.Sprintf("http://127.0.0.1%s/api/file/%s", config.GlobalConfig.SubStorePort, MihomoName),
+		fmt.Sprintf("%s/api/file/%s", BaseURL, MihomoName),
 		bytes.NewBuffer(json))
 	if err != nil {
 		return err

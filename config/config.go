@@ -33,6 +33,7 @@ type Config struct {
 	RecipientUrl       []string `yaml:"recipient-url"`
 	NotifyTitle        string   `yaml:"notify-title"`
 	SubStorePort       string   `yaml:"sub-store-port"`
+	SubStorePath       string   `yaml:"sub-store-path"`
 	MihomoOverwriteUrl string   `yaml:"mihomo-overwrite-url"`
 	MediaCheck         bool     `yaml:"media-check"`
 	Platforms          []string `yaml:"platforms"`
