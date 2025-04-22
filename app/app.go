@@ -121,9 +121,10 @@ func (app *App) Run() {
 func (app *App) setTimer() {
 	// 停止现有定时器
 	if app.ticker != nil {
-		app.ticker.Stop()
+		// 应该先发送停止信号，防止被=nil后panic
 		close(app.done)                // 发送停止信号
 		app.done = make(chan struct{}) // 创建新通道
+		app.ticker.Stop()
 		app.ticker = nil
 	}
 
