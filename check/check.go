@@ -3,6 +3,7 @@ package check
 import (
 	"context"
 	"fmt"
+	"math"
 	"net"
 	"net/http"
 	"os"
@@ -18,6 +19,7 @@ import (
 	"github.com/beck-8/subs-check/check/platform"
 	"github.com/beck-8/subs-check/config"
 	proxyutils "github.com/beck-8/subs-check/proxy"
+	"github.com/juju/ratelimit"
 	"github.com/metacubex/mihomo/adapter"
 	"github.com/metacubex/mihomo/constant"
 )
@@ -54,6 +56,8 @@ var ProxyCount atomic.Uint32
 var TotalBytes atomic.Int64
 
 var ForceClose atomic.Bool
+
+var Bucket *ratelimit.Bucket
 
 // NewProxyChecker 创建新的检测器实例
 func NewProxyChecker(proxyCount int) *ProxyChecker {
@@ -108,8 +112,14 @@ func Check() ([]Result, error) {
 
 // Run 运行检测流程
 func (pc *ProxyChecker) run(proxies []map[string]any) ([]Result, error) {
+	if config.GlobalConfig.TotalSpeedLimit != 0 {
+		Bucket = ratelimit.NewBucketWithRate(float64(config.GlobalConfig.TotalSpeedLimit*1024*1024), int64(config.GlobalConfig.TotalSpeedLimit*1024*1024/10))
+	} else {
+		Bucket = ratelimit.NewBucketWithRate(float64(math.MaxInt64), int64(math.MaxInt64))
+	}
+
 	slog.Info("开始检测节点")
-	slog.Info(fmt.Sprintf("启动工作线程: %d", pc.threadCount))
+	slog.Info("当前参数", "concurrent", config.GlobalConfig.Concurrent, "min-speed", config.GlobalConfig.MinSpeed, "download-timeout", config.GlobalConfig.DownloadTimeout, "download-mb", config.GlobalConfig.DownloadMB, "total-speed-limit", config.GlobalConfig.TotalSpeedLimit)
 
 	done := make(chan bool)
 	if config.GlobalConfig.PrintProgress {
@@ -239,7 +249,7 @@ func (pc *ProxyChecker) checkProxy(proxy map[string]any) *Result {
 	var speed int
 	var totalBytes int64
 	if config.GlobalConfig.SpeedTestUrl != "" {
-		speed, totalBytes, err = platform.CheckSpeed(httpClient.Client)
+		speed, totalBytes, err = platform.CheckSpeed(httpClient.Client, Bucket)
 		TotalBytes.Add(totalBytes)
 		if err != nil || speed < config.GlobalConfig.MinSpeed {
 			return nil

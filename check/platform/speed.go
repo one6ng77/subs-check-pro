@@ -3,15 +3,17 @@ package platform
 import (
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"time"
 
 	"log/slog"
 
 	"github.com/beck-8/subs-check/config"
+	"github.com/juju/ratelimit"
 )
 
-func CheckSpeed(httpClient *http.Client) (int, int64, error) {
+func CheckSpeed(httpClient *http.Client, bucket *ratelimit.Bucket) (int, int64, error) {
 	// 创建一个新的测速专用客户端，基于原有客户端的传输层
 	speedClient := &http.Client{
 		// 设置更长的超时时间用于测速
@@ -28,17 +30,19 @@ func CheckSpeed(httpClient *http.Client) (int, int64, error) {
 	defer resp.Body.Close()
 
 	var totalBytes int64
+	var limitSize int64
 	startTime := time.Now()
 
+	// 下载速度限制
+	bucketReader := ratelimit.Reader(resp.Body, bucket)
 	// 根据配置决定是否限制下载大小
 	if config.GlobalConfig.DownloadMB > 0 {
-		limitSize := int64(config.GlobalConfig.DownloadMB) * 1024 * 1024
-		limitedReader := io.LimitReader(resp.Body, limitSize)
-		totalBytes, err = io.Copy(io.Discard, limitedReader)
+		limitSize = int64(config.GlobalConfig.DownloadMB) * 1024 * 1024
 	} else {
-		// 如果没有配置DownloadMB，则不限制下载大小
-		totalBytes, err = io.Copy(io.Discard, resp.Body)
+		limitSize = math.MaxInt64
 	}
+	limitedReader := io.LimitReader(bucketReader, limitSize)
+	totalBytes, err = io.Copy(io.Discard, limitedReader)
 	if err != nil && totalBytes == 0 {
 		slog.Debug(fmt.Sprintf("totalBytes: %d, 读取数据时发生错误: %v", totalBytes, err))
 		return 0, 0, err
