@@ -225,6 +225,8 @@ docker run --name apprise \
   -d caronc/apprise:latest
 ```
 
+### 配置文件中配置通知URL
+
 > **配置说明：**
 > 根据 [Apprise wiki](https://github.com/caronc/apprise/wiki) 编写发送通知的 URL，其中有关于如何设置每个通知渠道的详细文档和说明。
 
