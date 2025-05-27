@@ -56,7 +56,7 @@ func (app *App) initHttpServer() error {
 
 		// API路由
 		api := router.Group("/api")
-		api.Use(app.authMiddleware()) // 添加认证中间件
+		api.Use(app.authMiddleware(config.GlobalConfig.APIKey)) // 添加认证中间件
 		{
 			// 配置相关API
 			api.GET("/config", app.getConfig)
@@ -95,10 +95,10 @@ func (app *App) initHttpServer() error {
 }
 
 // authMiddleware API认证中间件
-func (app *App) authMiddleware() gin.HandlerFunc {
+func (app *App) authMiddleware(key string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		apiKey := c.GetHeader("X-API-Key")
-		if subtle.ConstantTimeCompare([]byte(apiKey), []byte(config.GlobalConfig.APIKey)) != 1 {
+		if subtle.ConstantTimeCompare([]byte(apiKey), []byte(key)) != 1 {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "无效的API密钥"})
 			return
 		}
