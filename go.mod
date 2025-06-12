@@ -1,11 +1,12 @@
 module github.com/beck-8/subs-check
 
-go 1.23.0
+go 1.24.3
 
 require (
+	github.com/beck-8/2clash v0.0.0-20250612064014-cddf30f7b4f2
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/gin-gonic/gin v1.10.0
-	github.com/metacubex/mihomo v1.19.7-0.20250511034442-d22a893060c0
+	github.com/metacubex/mihomo v1.19.10
 	github.com/minio/minio-go/v7 v7.0.92
 	github.com/robfig/cron/v3 v3.0.1
 	gopkg.in/yaml.v3 v3.0.1

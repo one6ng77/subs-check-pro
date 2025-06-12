@@ -9,9 +9,9 @@ import (
 
 	"log/slog"
 
+	"github.com/beck-8/2clash/convert"
 	"github.com/beck-8/subs-check/config"
 	"github.com/beck-8/subs-check/utils"
-	"github.com/metacubex/mihomo/common/convert"
 	"gopkg.in/yaml.v3"
 )
 
@@ -48,7 +48,6 @@ func GetProxies() ([]map[string]any, error) {
 				slog.Error(fmt.Sprintf("获取订阅链接错误跳过: %v", err))
 				return
 			}
-			slog.Debug(fmt.Sprintf("获取订阅链接: %s，数据长度: %d", url, len(data)))
 
 			var con map[string]any
 			err = yaml.Unmarshal(data, &con)
@@ -82,6 +81,7 @@ func GetProxies() ([]map[string]any, error) {
 					slog.Error(fmt.Sprintf("解析proxy错误: %v", err), "url", url)
 					return
 				}
+				slog.Debug(fmt.Sprintf("获取订阅链接: %s，有效节点数量: %d", url, len(proxyList)))
 				for _, proxy := range proxyList {
 					proxyChan <- proxy
 				}
