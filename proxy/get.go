@@ -100,7 +100,7 @@ func GetProxies() ([]map[string]any, error) {
 			if !ok {
 				return
 			}
-
+			slog.Debug(fmt.Sprintf("获取订阅链接: %s，有效节点数量: %d", url, len(proxyList)))
 			for _, proxy := range proxyList {
 				if proxyMap, ok := proxy.(map[string]any); ok {
 					// 虽然支持mihomo支持下划线，但是这里为了规范，还是改成横杠
