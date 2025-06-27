@@ -1,6 +1,6 @@
 # sub-store 后端使用教程
 
-> 当你打开`http://127.0.0.1:8299`，你发现跳转到了`https://sub-store.vercel.app/subs`
+> ~~当你打开`http://127.0.0.1:8299`，你发现跳转到了`https://sub-store.vercel.app/subs`~~ 新版已经变化了
 
 > 不要惊慌！不要惊慌！不要惊慌！
 
