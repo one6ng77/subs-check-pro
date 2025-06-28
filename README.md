@@ -253,51 +253,32 @@ http://127.0.0.1:8299/api/file/mihomo
 <details>
   <summary>展开查看</summary>
 
-**检测流程**
-
-![架构图1](./doc/images/arch1.svg)  
-<div style="display:none"> 
-```mermaid
-graph TD
-    A[订阅链接] -->|获取订阅链接| B[转成 YAML 格式]
-    B -->|解析与标准化| C[节点去重复]
-    C -->|去除冗余节点| D[测活]
-    D -->|节点可用| E[测速]
-    D -->|节点不可用| X[丢弃]
-    E -->|测速结果| F[流媒体测试]
-    F -->|解锁检测| G[输出可用节点]
-    G -->|保存节点| H1[保存到对应位置]
-    H1 -->|本地/R2/Gist/WebDAV| H2[发送消息通知]
-    G -->|上传节点| I1[上传到 Sub-Store 一份]
-    I1 -->|存储订阅| I2[提供后续服务]
-    I2 -->|转换格式| J[Sub-Store 转换]
-    J -->|Clash 格式| K1[输出 Clash 节点]
-    J -->|V2Ray 格式| K2[输出 V2Ray 节点]
-    J -->|ShadowRocket 格式| K3[输出 ShadowRocket 节点]
-    J -->|其他格式| K4[输出其他格式节点]
-```
-</div>
-
-**subs-check与sub-store之间的关系**
-
-![架构图2](./doc/images/arch2.svg)  
-<div style="display:none">  
 ```mermaid
 graph TD
     A[订阅链接] -->|获取订阅链接| B[subs-check]
-    B -->|生成 all.yaml| C[保存到 output 目录]
-    B -->|上传 all.yaml| D[sub-store ]
-    B -->|通过 8299 端口请求转换| E[sub-store 转换服务 ]
-    E -->|生成 mihomo.yaml, base64.txt| C
+    subgraph subs-check 处理流程
+        B -->|转成 YAML 格式| B1[节点去重]
+        B1 -->|去除冗余节点| B2[测活]
+        B2 -->|节点可用| B3[测速]
+        B2 -->|节点不可用| X[丢弃]
+        B3 -->|测速达标| B4[流媒体测试]
+        B3 -->|测速不达标| X[丢弃]
+        B4 -->|解锁检测| B5[生成 all.yaml]
+    end
+    B5 -->|保存到 output 目录| C[output 目录]
+    B5 -->|上传 all.yaml| D[sub-store]
+    C -->|保存到各位置| H1[R2/Gist/WebDAV/S3]
+    H1 -->|存储完成| H2[发送消息通知]
+    D -->|提供订阅转换服务| E[sub-store 转换服务]
+    subgraph sub-store 独立功能
+        E -->|生成配置文件| E1[mihomo.yaml, base64.txt]
+        E -->|其他格式转换| E2[Clash, V2Ray, ShadowRocket 等]
+        E -->|订阅分享| E3[分享订阅链接]
+    end
+    E1 -->|保存到 output 目录| C
     C -->|文件服务| F[8199 端口: /sub]
     B -->|Web 管理| G[8199 端口: /admin]
-    D -->|提供订阅转换服务| E
-    subgraph sub-store 独立功能
-        E -->|其他类型订阅| H1[生成 Clash, V2Ray, ShadowRocket 等]
-        E -->|订阅分享| H2[分享订阅链接]
-    end
 ``` 
-</div>
 
 </details>
 
