@@ -131,10 +131,8 @@ func GetDateFromSubs(subUrl string) ([]byte, error) {
 			lastErr = err
 			continue
 		}
-		// 如果走clash，那么输出base64的时候还要更改每个类型的key，所以不能走，以后都走URI
-		// 如果用户想使用clash源，那可以在订阅链接结尾加上 &flag=clash.meta
-		// 模拟用户访问，防止被屏蔽
-		req.Header.Set("User-Agent", convert.RandUserAgent())
+
+		req.Header.Set("User-Agent", "clash.meta")
 
 		resp, err := client.Do(req)
 		if err != nil {
