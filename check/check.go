@@ -34,6 +34,7 @@ type Result struct {
 	Cloudflare bool
 	Disney     bool
 	Gemini     bool
+	TikTok     bool
 	IP         string
 	IPRisk     string
 	Country    string
@@ -257,6 +258,10 @@ func (pc *ProxyChecker) checkProxy(proxy map[string]any) *Result {
 					// 失败的可能性高，所以放上日志
 					slog.Debug(fmt.Sprintf("查询IP风险失败: %v", err))
 				}
+			case "tiktok":
+				if ok, _ := platform.CheckTikTok(httpClient.Client); ok {
+					res.TikTok = true
+				}
 			}
 		}
 	}
@@ -316,6 +321,9 @@ func (pc *ProxyChecker) updateProxyName(res *Result, httpClient *ProxyClient, sp
 	}
 	if res.Gemini {
 		tags = append(tags, "Gemini")
+	}
+	if res.TikTok {
+		tags = append(tags, "TikTok")
 	}
 
 	// 将所有标记添加到名称中

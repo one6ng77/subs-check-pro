@@ -50,6 +50,7 @@ platforms:
   - disney
   - gemini
   - iprisk
+  - tiktok
 
 # 保留之前测试成功的节点
 # 如果为true，则保留之前测试成功的节点，这样就不会因为上游链接更新，导致可用的节点被清除掉
