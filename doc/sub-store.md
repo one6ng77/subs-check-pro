@@ -56,3 +56,10 @@ sub-store-path: "/diypath"
 
 ![步骤十](./images/sub-store10.png)
 ![步骤十一](./images/sub-store11.png)
+
+## sub-store 新版特性
+sub-store 后端版本 2.19.97 之后支持 github 代理（sub-store 同步文件和备份\恢复配置时使用），如出现 token 错误，请检查 githubproxy
+
+> 后端需 >= 2.19.97： 1. 仅用于上传/下载 Gist 和获取 GitHub 头像；2. 请填写完整 如 https://a.com ；3. 需同时支持代理 https://api.github.com/users/* 和 https://api.github.com/gists ，测试方式：浏览器打开 https://a.com/https://api.github.com/gists?per_page=1&page=1 和 https://a.com/https://api.github.com/users/xream 有正常的响应。 
+
+> 使用此方式时，自行注意安全隐私问题！

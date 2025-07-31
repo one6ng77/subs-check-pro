@@ -151,6 +151,21 @@ func startSubStore() error {
 		cmd.Env = append(cmd.Env, "SUB_STORE_BACKEND_MERGE=1")
 	}
 
+	// sub-store 环境变量: 后端上传文件至 gist
+	if config.GlobalConfig.SubStoreSyncCron != "" {
+		cmd.Env = append(cmd.Env, fmt.Sprintf("SUB_STORE_BACKEND_SYNC_CRON=%s", config.GlobalConfig.SubStoreSyncCron))
+	}
+
+	// sub-store 环境变量: 自动拉取订阅内容
+	if config.GlobalConfig.SubStoreProduceCron != "" {
+		cmd.Env = append(cmd.Env, fmt.Sprintf("SUB_STORE_PRODUCE_CRON=%s", config.GlobalConfig.SubStoreProduceCron))
+	}
+
+	// sub-store 环境变量: 当遇到错误时发送通知
+	if config.GlobalConfig.SubStorePushService != "" {
+		cmd.Env = append(cmd.Env, fmt.Sprintf("SUB_STORE_PUSH_SERVICE=%s", config.GlobalConfig.SubStorePushService))
+	}
+
 	if err := cmd.Start(); err != nil {
 		return fmt.Errorf("启动 sub-store 失败: %w", err)
 	}
