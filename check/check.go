@@ -367,7 +367,7 @@ func (pc *ProxyChecker) showProgress(done chan bool) {
 
 			// if 0/0 = NaN ,shoule panic
 			percent := float64(current) / float64(pc.proxyCount) * 100
-			fmt.Printf("\r进度: [%-50s] %.1f%% (%d/%d) 可用: %d",
+			fmt.Printf("\r进度: [%-45s] %.1f%% (%d/%d) 可用: %d",
 				strings.Repeat("=", int(percent/2))+">",
 				percent,
 				current,
