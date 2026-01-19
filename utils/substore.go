@@ -359,15 +359,3 @@ func formatPort(port string) string {
 	}
 	return ":" + port
 }
-
-// WarpURL 添加github代理前缀
-func WarpURL(url string, isGhProxyAvailable bool) string {
-	// 如果url中以https://raw.githubusercontent.com开头，那么就使用github代理
-	if strings.HasPrefix(url, "https://raw.githubusercontent.com") && isGhProxyAvailable {
-		return config.GlobalConfig.GithubProxy + url
-	}
-	if strings.Contains(url, "/raw") && strings.Contains(url, "github.com/") {
-		return config.GlobalConfig.GithubProxy + url
-	}
-	return url
-}
