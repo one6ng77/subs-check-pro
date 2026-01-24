@@ -8,7 +8,7 @@ import HomepageFeatures from '../components/HomepageFeatures';
 export default function Home(): ReactNode {
   const {siteConfig} = useDocusaurusContext();
   return (
-    <Layout title={siteConfig.title} description="统一 URL，推送到 100+ 通知渠道">
+    <Layout title={siteConfig.title} description="测活、测速、媒体解锁，代理检测工具，自动生成 mihomo 和 singbox 订阅">
       {/* 使用 homeWrapper 包装，实现垂直居中布局 */}
       <div className={styles.homeWrapper}>
         <main className={styles.mainContent}>
