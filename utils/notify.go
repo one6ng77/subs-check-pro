@@ -212,6 +212,8 @@ func decorateURL(raw string, kind NotifyKind, downloadURL string) string {
 		case NotifyNodeStatus:
 			q.Set("footer", "节点状态更新")
 		}
+	case "mailto", "mailtos":
+		q.Set("from", "Subs-Check-PRO")
 	}
 
 	// 重新组装 URL

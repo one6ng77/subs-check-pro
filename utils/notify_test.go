@@ -6,11 +6,12 @@ import (
 	"github.com/sinspired/subs-check-pro/config"
 )
 
-var TestAPI = "https://apprise.xxxxxx.com/notify"
+var TestAPI = "https://apprise.xxxxx.xxxxx.org/notify"
 var TestURLs = []string{
 	"ntfy://xxxxxxx",
 	"bark://api.day.app/xxxxxxxxxxxxxxx",
 	"tgram://xxxxxxxxxxxxxxxxxxx/xxxxxxxxxxxxxxxx",
+	"mailto://xxxxxxxx:yyyyyyyyy@qq.com",
 }
 
 // helper: 设置全局配置并在测试结束后恢复
