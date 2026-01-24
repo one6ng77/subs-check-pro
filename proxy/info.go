@@ -72,6 +72,7 @@ func GetProxyCountry(httpClient *http.Client, db *maxminddb.Reader, GetAnalyzedC
 	cliMe, err := NewIPInfoClient(httpClient, db, ipAPIsMe, geoAPIsMe)
 	if err != nil || cliMe == nil {
 		slog.Debug(fmt.Sprintf("创建 MeAPI 客户端失败: %s", err))
+		goto NextClient
 	} else {
 		defer cliMe.Close()
 	}
@@ -89,6 +90,7 @@ func GetProxyCountry(httpClient *http.Client, db *maxminddb.Reader, GetAnalyzedC
 		}
 	}
 
+NextClient:
 	// 如失败，使用混合检测，不需要多次重试
 	cli, err := NewIPInfoClient(httpClient, db, ipAPIs, geoAPIs)
 	if err != nil || cli == nil {
