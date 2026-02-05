@@ -32,6 +32,14 @@ import (
 // ErrIgnore 标记无需记录日志的非致命错误
 var ErrIgnore = errors.New("error-ignore")
 
+type SubStat struct {
+	Total   int
+	Success int
+}
+
+// SubStats 存储订阅总数和成功数
+var SubStats = make(map[string]SubStat)
+
 // ProxyNode 定义通用节点结构类型
 type ProxyNode map[string]any
 
@@ -110,10 +118,6 @@ func GetProxies() ([]map[string]any, int, int, int, error) {
 
 		// 记录已存储节点的优先级，用于比较
 		nodeKeepLevels = make(map[string]int, 200000)
-
-		// 订阅统计
-		subNodeCounts = make(map[string]int)
-		validSubs     = make(map[string]struct{})
 	)
 
 	// GC 阈值，每20万个节点进行一次GC，避免内存无限上涨
@@ -141,8 +145,9 @@ func GetProxies() ([]map[string]any, int, int, int, error) {
 
 			// 1. 统计订阅源
 			if su, ok := proxy["sub_url"].(string); ok && su != "" {
-				validSubs[su] = struct{}{}
-				subNodeCounts[su]++
+				stats := SubStats[su]
+				stats.Total++
+				SubStats[su] = stats
 			}
 
 			// 2. 计算当前节点的优先级
@@ -240,7 +245,7 @@ func GetProxies() ([]map[string]any, int, int, int, error) {
 	uniqueNodes = nil
 	nodeKeepLevels = nil
 
-	saveStats(validSubs, subNodeCounts)
+	saveStats(SubStats)
 	// 打印去重统计日志
 	slog.Info("节点解析",
 		"原始", rawCount,
@@ -821,41 +826,42 @@ func cleanMetadata(p ProxyNode) {
 }
 
 // saveStats 保存统计信息
-func saveStats(validSubs map[string]struct{}, subNodeCounts map[string]int) {
+func saveStats(subStats map[string]SubStat) {
 	if !config.GlobalConfig.SubURLsStats {
 		return
 	}
 
-	// 1. 保存有效链接列表
-	list := lo.Keys(validSubs)
-	sort.Strings(list)
-	wrapped := map[string]any{"sub-urls": list}
-	if data, err := yaml.Marshal(wrapped); err == nil {
-		_ = method.SaveToStats(data, "subs-valid.yaml")
+	// 构造 pair 列表
+	type pair struct {
+		URL     string
+		Total   int
+		Success int
+	}
+	pairs := make([]pair, 0, len(subStats))
+	for u, st := range subStats {
+		pairs = append(pairs, pair{u, st.Total, st.Success})
 	}
 
-	// 2. 保存数量统计
-	type pair struct {
-		URL   string
-		Count int
-	}
-	pairs := make([]pair, 0, len(subNodeCounts))
-	for u, c := range subNodeCounts {
-		pairs = append(pairs, pair{u, c})
-	}
+	// 按总数降序，再按 URL 升序
 	sort.Slice(pairs, func(i, j int) bool {
-		if pairs[i].Count == pairs[j].Count {
+		if pairs[i].Total == pairs[j].Total {
 			return pairs[i].URL < pairs[j].URL
 		}
-		return pairs[i].Count > pairs[j].Count
+		return pairs[i].Total > pairs[j].Total
 	})
 
-	var sb strings.Builder
-	sb.WriteString("订阅链接:\n")
+	var validSB strings.Builder
+	var validStatsSB strings.Builder
+	validSB.WriteString("# 此列表根据节点数量从高到低排序，已剔除无效订阅链接\n")
+	validSB.WriteString("# 可直接替换 config.yaml 中的 subs-urls 字段\n")
+	validSB.WriteString("sub-urls:\n")
+	validStatsSB.WriteString("订阅链接统计:\n")
 	for _, p := range pairs {
-		sb.WriteString(fmt.Sprintf("- %q: %d\n", p.URL, p.Count))
+		fmt.Fprintf(&validSB, "  - %q\n", p.URL)
+		fmt.Fprintf(&validStatsSB, "  - %q: %d\n", p.URL, p.Total)
 	}
-	_ = method.SaveToStats([]byte(sb.String()), "subs-stats.yaml")
+	_ = method.SaveToStats([]byte(validSB.String()), "subs-valid.yaml")
+	_ = method.SaveToStats([]byte(validStatsSB.String()), "subs-stats.yaml")
 }
 
 // buildCandidateURLs 生成候选链接

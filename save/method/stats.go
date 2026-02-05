@@ -37,7 +37,7 @@ func NewStatsSaver() (*StatsSaver, error) {
 	}, nil
 }
 
-// SaveToStats保存配置到本地文件
+// SaveToStats 保存配置到本地文件
 func SaveToStats(yamlData []byte, filename string) error {
 	saver, err := NewStatsSaver()
 	if err != nil {

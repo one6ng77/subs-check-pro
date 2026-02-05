@@ -41,12 +41,6 @@ var (
 	ProcessResults atomic.Bool
 
 	Bucket *ratelimit.Bucket
-
-	// 统计每个订阅的节点总数和成功数
-	subStats = make(map[string]struct {
-		total   int
-		success int
-	})
 )
 
 // 存储测速和流媒体检测开关状态
@@ -395,15 +389,6 @@ func (pc *ProxyChecker) run(proxies []map[string]any) ([]Result, error) {
 			pc.showProgress(doneCh)
 			close(finishedCh)
 		}()
-	}
-
-	// 先统计每个订阅链接的总数量
-	for _, proxy := range proxies {
-		if subURL, ok := proxy["sub_url"].(string); ok {
-			stats := subStats[subURL]
-			stats.total++
-			subStats[subURL] = stats
-		}
 	}
 
 	// 启动流水线阶段
@@ -951,9 +936,9 @@ func (pc *ProxyChecker) checkSubscriptionSuccessRate() {
 	for _, result := range pc.results {
 		if result.Proxy != nil {
 			if subURL, ok := result.Proxy["sub_url"].(string); ok {
-				stats := subStats[subURL]
-				stats.success++
-				subStats[subURL] = stats
+				stats := proxyutils.SubStats[subURL]
+				stats.Success++
+				proxyutils.SubStats[subURL] = stats
 			}
 			delete(result.Proxy, "sub_url")
 			delete(result.Proxy, "sub_tag")
@@ -961,20 +946,20 @@ func (pc *ProxyChecker) checkSubscriptionSuccessRate() {
 	}
 
 	// 检查成功率并发出警告
-	for subURL, stats := range subStats {
-		if stats.total > 0 {
-			successRate := float32(stats.success) / float32(stats.total)
+	for subURL, stats := range proxyutils.SubStats {
+		if stats.Total > 0 {
+			successRate := float32(stats.Success) / float32(stats.Total)
 
 			// 如果成功率低于x，发出警告
 			if successRate < config.GlobalConfig.SuccessRate {
 				slog.Warn(fmt.Sprintf("订阅成功率过低: %s", subURL),
-					"总节点数", stats.total,
-					"成功节点数", stats.success,
+					"总节点数", stats.Total,
+					"成功节点数", stats.Success,
 					"成功占比", fmt.Sprintf("%.2f%%", successRate*100))
 			} else {
 				slog.Debug(fmt.Sprintf("订阅节点统计: %s", subURL),
-					"总节点数", stats.total,
-					"成功节点数", stats.success,
+					"总节点数", stats.Total,
+					"成功节点数", stats.Success,
 					"成功占比", fmt.Sprintf("%.2f%%", successRate*100))
 			}
 		}
@@ -990,14 +975,14 @@ func (pc *ProxyChecker) checkSubscriptionSuccessRate() {
 			Total   int
 			Success int
 		}
-		pairs := make([]pair, 0, len(subStats))
+		pairs := make([]pair, 0, len(proxyutils.SubStats))
 
-		for u, st := range subStats {
-			if st.total <= 0 || st.success <= 0 {
+		for u, st := range proxyutils.SubStats {
+			if st.Total <= 0 || st.Success <= 0 {
 				continue
 			}
-			r := float64(st.success) / float64(st.total)
-			pairs = append(pairs, pair{URL: u, Rate: r, Total: st.total, Success: st.success})
+			r := float64(st.Success) / float64(st.Total)
+			pairs = append(pairs, pair{URL: u, Rate: r, Total: st.Total, Success: st.Success})
 		}
 
 		// 排序：按成功率降序，再按URL升序
@@ -1014,9 +999,13 @@ func (pc *ProxyChecker) checkSubscriptionSuccessRate() {
 		// rate 保留4位小数，便于人眼阅读与程序解析
 		var filteredSB strings.Builder
 		var filteredStatsSB strings.Builder
+		filteredSB.WriteString("# 此列表根据订阅成功率从高到低排序，已剔除成功率为 0 的订阅链接\n")
+		filteredSB.WriteString("# 可直接替换 config.yaml 中的 subs-urls 字段\n")
+		filteredSB.WriteString("sub-urls:\n")
+		filteredStatsSB.WriteString("订阅链接成功率统计:\n")
 		for _, p := range pairs {
-			fmt.Fprintf(&filteredSB, "- %s\n", p.URL)
-			fmt.Fprintf(&filteredStatsSB, "- %q: %d/%d (%.3f%%)\n", p.URL, p.Success, p.Total, p.Rate*100)
+			fmt.Fprintf(&filteredSB, "  - %s\n", p.URL)
+			fmt.Fprintf(&filteredStatsSB, "  - %q: %d/%d (%.3f%%)\n", p.URL, p.Success, p.Total, p.Rate*100)
 		}
 		if err := method.SaveToStats([]byte(filteredSB.String()), "subs-filtered.yaml"); err != nil {
 			slog.Warn("保存过滤后的订阅链接失败", "err", err)
