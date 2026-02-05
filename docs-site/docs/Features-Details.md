@@ -99,9 +99,8 @@ prerelease: false
 output/
 └── stats/
     ├── subs-valid.yaml            # 有效订阅链接
-    ├── subs-stats.yaml            # 统计节点数量
-    ├── subs-filtered.yaml         # 剔除无可用节点后的订阅
-    └── subs-filtered-stats.yaml   # 统计成功率等数据
+    ├── subs-good.yaml             # 剔除成功率未达标的订阅
+    └── subs-bad.yaml              # 未达到成功率要求的订阅
 ```
 
 设置项：

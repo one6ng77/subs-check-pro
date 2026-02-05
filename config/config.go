@@ -50,7 +50,7 @@ type Config struct {
 	SubUrlsRemote        []string `yaml:"sub-urls-remote"`
 	SubUrls              []string `yaml:"sub-urls"`
 	SubURLsStats         bool     `yaml:"sub-urls-stats"`
-	SuccessRate          float32  `yaml:"success-rate"`
+	SuccessRate          float64  `yaml:"success-rate"`
 	MihomoAPIURL         string   `yaml:"mihomo-api-url"`
 	MihomoAPISecret      string   `yaml:"mihomo-api-secret"`
 	ListenPort           string   `yaml:"listen-port"`

@@ -38,17 +38,17 @@ func NewStatsSaver() (*StatsSaver, error) {
 }
 
 // SaveToStats 保存配置到本地文件
-func SaveToStats(yamlData []byte, filename string) error {
+func SaveToStats(yamlData []byte, filename, message string) error {
 	saver, err := NewStatsSaver()
 	if err != nil {
 		return fmt.Errorf("创建本地保存器失败: %w", err)
 	}
 
-	return saver.Save(yamlData, filename)
+	return saver.Save(yamlData, filename, message)
 }
 
 // Save 执行保存操作
-func (ls *StatsSaver) Save(yamlData []byte, filename string) error {
+func (ls *StatsSaver) Save(yamlData []byte, filename, message string) error {
 	// 确保输出目录存在
 	if err := ls.ensureStatsDir(); err != nil {
 		return fmt.Errorf("创建输出目录失败: %w", err)
@@ -65,7 +65,10 @@ func (ls *StatsSaver) Save(yamlData []byte, filename string) error {
 	if err := os.WriteFile(filepath, yamlData, fileMode); err != nil {
 		return fmt.Errorf("写入文件失败 [%s]: %w", filename, err)
 	}
-	slog.Info("保存订阅统计信息", "filepath", filepath)
+	if message == "" {
+		message = "保存订阅统计成功"
+	}
+	slog.Info(message, "filepath", filepath)
 
 	return nil
 }

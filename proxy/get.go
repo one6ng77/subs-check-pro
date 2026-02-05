@@ -851,17 +851,13 @@ func saveStats(subStats map[string]SubStat) {
 	})
 
 	var validSB strings.Builder
-	var validStatsSB strings.Builder
-	validSB.WriteString("# 此列表根据节点数量从高到低排序，已剔除无效订阅链接\n")
+	validSB.WriteString("# 已剔除失效订阅链接\n")
 	validSB.WriteString("# 可直接替换 config.yaml 中的 subs-urls 字段\n")
 	validSB.WriteString("sub-urls:\n")
-	validStatsSB.WriteString("订阅链接统计:\n")
 	for _, p := range pairs {
-		fmt.Fprintf(&validSB, "  - %q\n", p.URL)
-		fmt.Fprintf(&validStatsSB, "  - %q: %d\n", p.URL, p.Total)
+		fmt.Fprintf(&validSB, "  - %q # nodes: %d\n", p.URL, p.Total)
 	}
-	_ = method.SaveToStats([]byte(validSB.String()), "subs-valid.yaml")
-	_ = method.SaveToStats([]byte(validStatsSB.String()), "subs-stats.yaml")
+	_ = method.SaveToStats([]byte(validSB.String()), "subs-valid.yaml","剔除失效订阅")
 }
 
 // buildCandidateURLs 生成候选链接
