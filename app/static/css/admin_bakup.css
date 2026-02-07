@@ -128,9 +128,11 @@ body {
 .btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: var(--glass-shadow);
-  background: linear-gradient(180deg,
-      var(--glass-bg),
-      rgba(250, 250, 250, 0.02));
+  background: linear-gradient(
+    180deg,
+    var(--glass-bg),
+    rgba(250, 250, 250, 0.02)
+  );
   border-color: var(--glass-border);
   color: var(--fg);
 }
@@ -178,8 +180,7 @@ header {
 /* 标题行布局 */
 .title-row {
   display: flex;
-  align-items: baseline;
-  /* 让版本号对齐标题文字基线 */
+  align-items: baseline; /* 让版本号对齐标题文字基线 */
   gap: 8px;
 }
 
@@ -219,8 +220,7 @@ header {
 
 /* 发现新版本 (稳定版) */
 .version.new-version {
-  background: rgba(0, 200, 210, 0.1);
-  /* 青色透明背景 */
+  background: rgba(0, 200, 210, 0.1); /* 青色透明背景 */
   color: var(--accent);
   border: 1px solid rgba(0, 200, 210, 0.2);
   font-weight: 500;
@@ -228,8 +228,7 @@ header {
 
 /* 发现新版本 (预览版) */
 .version.new-version.pre-release {
-  background: rgba(255, 152, 0, 0.1);
-  /* 橙色背景 */
+  background: rgba(255, 152, 0, 0.1); /* 橙色背景 */
   color: #ff9800;
   border: 1px dashed rgba(255, 152, 0, 0.4);
 }
@@ -321,8 +320,10 @@ main {
   gap: var(--gap);
   min-height: 0;
   height: 100%;
-  grid-template-columns: minmax(200px, max-content) minmax(300px, 1fr) minmax(300px,
-      1fr);
+  grid-template-columns: minmax(200px, max-content) minmax(300px, 1fr) minmax(
+      300px,
+      1fr
+    );
 }
 
 /* 父容器必须有min-height:0 否则日志会撑破容器 */
@@ -412,9 +413,11 @@ main {
 }
 
 .list-item:hover {
-  background: linear-gradient(180deg,
-      var(--glass-bg),
-      rgba(255, 255, 255, 0.02));
+  background: linear-gradient(
+    180deg,
+    var(--glass-bg),
+    rgba(255, 255, 255, 0.02)
+  );
   box-shadow: var(--glass-shadow);
 }
 
@@ -676,9 +679,11 @@ main {
 
 .toggle-btn.state-starting,
 .toggle-btn.state-stopping {
-  background: linear-gradient(90deg,
-      rgba(255, 255, 255, 0.04),
-      rgba(255, 255, 255, 0.02));
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04),
+    rgba(255, 255, 255, 0.02)
+  );
   color: var(--muted);
   border-color: rgba(255, 255, 255, 0.06);
 }
@@ -797,7 +802,6 @@ main {
 }
 
 @keyframes progressShimmer {
-
   0%,
   100% {
     opacity: 1;
@@ -868,164 +872,133 @@ main {
   /* 显示省略号 */
 }
 
-/* ==================== 交互式分析摘要 ==================== */
+/* ==================== 结构化分析仪表盘 ==================== */
 
 .analysis-feather-tip {
+  margin-top: 16px;
   border-top: 1px solid var(--border);
   background: var(--input-bg);
-  padding: 0;
-  /* 内边距交给内部元素，方便控制点击区域 */
+  padding: 16px;
   margin-left: -12px;
   margin-right: -12px;
   margin-bottom: -12px;
-  font-size: 12px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  transition: all 0.3s ease;
 }
 
-/* 交互标题栏 */
-.summary-toggle-header {
-  opacity: 0.8;
-  padding: 10px 16px;
+.analysis-dashboard {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* 核心指标行 */
+.main-metrics {
+  display: flex;
   justify-content: space-between;
-  cursor: pointer;
-  user-select: none;
-  transition: background-color 0.2s;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 8px 12px;
+  border-radius: 8px;
 }
 
-.summary-toggle-header:hover {
-  background: rgba(14, 165, 160, 0.05);
-}
-
-.summary-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--muted);
-}
-
-.icon-spark {
-  width: 14px;
-  height: 14px;
-}
-
-.icon-chevron {
-  width: 16px;
-  height: 16px;
-  transition: transform 0.3s ease;
-  color: var(--muted);
-}
-
-/* 内容包装器：负责高度动画 */
-.summary-content-wrapper {
-  max-height: 400px;
-  /* 足够容纳段落的高度 */
-  overflow: hidden;
-  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
-  opacity: 1;
-}
-
-/* 内容布局 */
-.tip-content {
-  padding: 0 18px 12px 18px;
+.metric-item {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  /* 增加行距，更显整齐 */
 }
 
-.summary-line {
-  display: flex;
-  align-items: left;
-  flex-wrap: wrap;
+.metric-item .label {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.metric-item .value {
+  font-size: 15px;
+  font-weight: 700;
   color: var(--fg);
 }
 
-/* 分隔符：| 样式 */
-.sep-pipe {
-  color: var(--calculating);
-  padding: 0 6px;
-  font-weight: 300;
-  font-size: 10px;
-}
-
-/* 维度标签 */
-.sub-label {
-  color: var(--muted);
-  font-weight: 500;
-}
-
-.kv {
-  color: var(--muted);
-}
-
-.kv b {
+.metric-item .value.accent {
   color: var(--accent);
-  font-weight: 500;
 }
 
-.b-data {
-  color: var(--accent);
-  padding: 0 6px;
+/* Badge 样式 */
+.tags-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-/* 列表详情：弱化 */
-.muted-list {
-  display: inline-flex;
+.tag-section {
+  display: flex;
   align-items: center;
+  gap: 10px;
+}
+
+.section-label {
+  font-size: 12px;
   color: var(--muted);
+  min-width: 50px;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.badge {
   font-size: 11px;
-  margin-left: 4px;
-  opacity: 0.6;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--fg);
 }
 
-.tag-list{
-  padding:0 4px;
+.badge.geo {
+  border-left: 3px solid var(--accent);
 }
 
-/* 地区：蓝紫色 (冷色调) */
-.tag-location {
-  color: rgb(238, 44, 0);
+.badge.proto {
+  background: rgba(14, 165, 160, 0.1);
+  color: var(--accent);
+  text-transform: uppercase;
+  font-family: var(--font-mono);
 }
 
-/* 协议：番茄红 (亮色调) */
-.tag-type {
-  color: rgb(232, 106, 2);
+.badge sup {
+  font-size: 9px;
+  margin-left: 2px;
+  opacity: 0.7;
 }
 
-/* 媒体：紫色 (深色调) */
-.tag-media {
-  color: rgb(2, 118, 233);
+/* 解锁信息网格 */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  border-top: 1px dashed var(--border);
+  padding-top: 12px;
 }
 
-/* AI：橙色 (暖色调) */
-.tag-ai {
-  color: rgb(0, 233, 113);
+.info-item b {
+  display: block;
+  font-size: 12px;
+  color: var(--fg);
+  margin-bottom: 4px;
 }
 
-/* ==================== 折叠状态 (Collapsed) ==================== */
-
-.analysis-feather-tip.collapsed .summary-content-wrapper {
-  max-height: 0;
-  opacity: 0;
+.info-item p {
+  font-size: 12px;
+  color: var(--muted);
+  word-break: break-all;
 }
 
-.analysis-feather-tip.collapsed .icon-chevron {
-  transform: rotate(-90deg);
-  /* 箭头指向左侧/下方 */
-}
-
-/* 移动端微调 */
-@media (max-width: 899px) {
-  .tip-content {
-    font-size: 12px;
-  }
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .btn.small {
@@ -1114,7 +1087,6 @@ main {
   flex-direction: row;
   gap: 0px;
 }
-
 .title-status {
   font-weight: 600;
   font-size: 12px;
@@ -1125,7 +1097,6 @@ main {
 .card-tip {
   padding-right: 1em;
 }
-
 .muted {
   color: var(--muted);
   font-size: 12px;
@@ -1301,7 +1272,7 @@ main {
 
 /* 自动完成提示 */
 .cm-tooltip-autocomplete {
-  &>ul>li[aria-selected] {
+  & > ul > li[aria-selected] {
     background: rgba(0, 197, 201, 0.7) !important;
     color: var(--fg) !important;
     font-weight: 600;
@@ -1553,9 +1524,11 @@ main {
   border-radius: 50%;
   pointer-events: none;
   z-index: -1;
-  background: radial-gradient(circle at 40% 40%,
-      var(--accent),
-      transparent 40%);
+  background: radial-gradient(
+    circle at 40% 40%,
+    var(--accent),
+    transparent 40%
+  );
   filter: blur(60px);
   opacity: 0.5;
   /* will-change: transform, opacity, filter; */
@@ -1575,25 +1548,30 @@ main {
   }
 
   50% {
-    transform: translate(-50%, -50%) rotate(180deg) translate(20px, -10px) scale(1.13);
+    transform: translate(-50%, -50%) rotate(180deg) translate(20px, -10px)
+      scale(1.13);
   }
 
   100% {
-    transform: translate(-50%, -50%) rotate(360deg) translate(0px, 0px) scale(1.05);
+    transform: translate(-50%, -50%) rotate(360deg) translate(0px, 0px)
+      scale(1.05);
   }
 }
 
 @keyframes swirlB {
   0% {
-    transform: translate(-50%, -50%) rotate(0deg) translate(30px, 10px) scale(1.1);
+    transform: translate(-50%, -50%) rotate(0deg) translate(30px, 10px)
+      scale(1.1);
   }
 
   50% {
-    transform: translate(-50%, -50%) rotate(180deg) translate(-10px, 20px) scale(1.13);
+    transform: translate(-50%, -50%) rotate(180deg) translate(-10px, 20px)
+      scale(1.13);
   }
 
   100% {
-    transform: translate(-50%, -50%) rotate(360deg) translate(50px, -80px) scale(1.05);
+    transform: translate(-50%, -50%) rotate(360deg) translate(50px, -80px)
+      scale(1.05);
   }
 }
 
@@ -1606,8 +1584,7 @@ main {
 .login-title {
   position: relative;
   display: inline-block;
-  width: fit-content;
-  /* 容器宽度收缩到文字 */
+  width: fit-content; /* 容器宽度收缩到文字 */
 }
 
 .login-card h3 {
@@ -1623,10 +1600,8 @@ main {
 .version-badge {
   position: absolute;
   bottom: 2.2em;
-  left: 100%;
-  /* 起点在文字末尾 */
-  margin-left: 0px;
-  /* 固定间距 */
+  left: 100%; /* 起点在文字末尾 */
+  margin-left: 0px; /* 固定间距 */
   color: var(--muted);
   font-size: 13px;
   font-weight: normal;
@@ -1640,10 +1615,8 @@ main {
 
 .version-badge.is-pre {
   right: -3.5em;
-  margin-left: -3em;
-  /* 固定间距 */
+  margin-left: -3em; /* 固定间距 */
 }
-
 /* 当前版本是预览版时的表现 */
 #version-login.is-pre {
   font-style: italic;
@@ -1666,8 +1639,7 @@ main {
   font-size: 9px;
   font-weight: bold;
   padding: 2px 4px;
-  border-radius: 4px;
-  /* 稍微方一点更有标签感 */
+  border-radius: 4px; /* 稍微方一点更有标签感 */
   line-height: 1;
   white-space: nowrap;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -1681,20 +1653,16 @@ main {
 
 /* 状态 2：预览版更新 - 橙色 PRE (覆盖正式版样式) */
 .new-version.pre-release::after {
-  content: 'PRE';
-  /* 建议使用 PRE */
+  content: 'PRE'; /* 建议使用 PRE */
   background: #ff9800;
 }
 
 /* 当新版本是预览版 (Beta/RC) 时的特殊样式 */
 .new-version.pre-release {
-  background: rgba(255, 152, 0, 0.1);
-  /* 橙色背景 */
+  background: rgba(255, 152, 0, 0.1); /* 橙色背景 */
   box-shadow: 0 0 4px rgba(255, 152, 0, 0.4);
-  color: #ff9800 !important;
-  /* 橙色文字 */
-  border: 1px dashed rgba(255, 152, 0, 0.5);
-  /* 虚线边框暗示不稳定 */
+  color: #ff9800 !important; /* 橙色文字 */
+  border: 1px dashed rgba(255, 152, 0, 0.5); /* 虚线边框暗示不稳定 */
 }
 
 /* 悬停效果 */
@@ -1712,11 +1680,9 @@ main {
   0% {
     opacity: 1;
   }
-
   50% {
     opacity: 0.7;
   }
-
   100% {
     opacity: 1;
   }
@@ -1973,7 +1939,6 @@ main {
 }
 
 @media (max-width: 899px) {
-
   /* 编辑器 */
   #configEditor,
   .cm-editor {

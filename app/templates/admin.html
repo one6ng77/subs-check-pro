@@ -207,7 +207,7 @@
       <section class="content" id="mainContent">
         <!-- 检测进度卡片 -->
         <div class="progressCard card">
-          <div class="progress-row">
+          <div class="progress-row" >
             <div class="progress-actions">
               <button id="btnToggleCheck" class="toggle-btn" aria-label="检测开关" title="开始检测">
                 <!-- 内联SVG：初始idle状态 -->
@@ -289,7 +289,14 @@
               </div>
             </div>
           </div>
+                  <!-- 新增：详细分析卡片 (放在卡片外，Tip 样式) -->
+        <div id="analysisSummaryCard" class="analysis-feather-tip" style="display:none;">
+          <div id="analysisSummaryText" class="tip-content">
+            <!-- 注入摘要内容 -->
+          </div>
         </div>
+        </div>
+
         <!-- 日志卡片 -->
         <div class="card logsCard" id="logArea">
           <!-- 卡片头部 -->

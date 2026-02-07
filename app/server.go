@@ -208,6 +208,7 @@ func (app *App) registerAPIRoutes(router *gin.Engine) {
 		api.GET("/version", app.getVersion)
 		api.GET("/singbox-versions", app.getSingboxVersions)
 		api.GET("/logs", app.getLogs)
+		api.GET("/analysis-report", app.getAnalysisReport)
 	}
 }
 
@@ -330,6 +331,40 @@ func (app *App) getLogs(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"logs": lines})
 }
+
+// AnalysisReportPath 返回分析报告路径
+func AnalysisReportPath() (string, error) {
+    saver, err := method.NewLocalSaver()
+    if err != nil {
+        return "", fmt.Errorf("获取http监听目录失败: %w", err)
+    }
+    return filepath.Join(saver.OutputPath, "stats", "subs-analysis.yaml"), nil
+}
+
+// getAnalysisReport 获取分析报告
+func (app *App) getAnalysisReport(c *gin.Context) {
+    reportPath, err := AnalysisReportPath()
+    if err != nil {
+        c.JSON(http.StatusOK, gin.H{"report": ""}) // 路径错误返回空，不报错
+        return
+    }
+
+    // 检查文件是否存在
+    if _, err := os.Stat(reportPath); os.IsNotExist(err) {
+        c.JSON(http.StatusOK, gin.H{"report": ""}) // 文件不存在返回空
+        return
+    }
+
+    data, err := os.ReadFile(reportPath)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "读取失败"})
+        return
+    }
+
+    // 返回 JSON 对象，包含 report 字符串
+    c.JSON(http.StatusOK, gin.H{"report": string(data)})
+}
+
 
 // getVersion 获取版本
 func (app *App) getVersion(c *gin.Context) {
