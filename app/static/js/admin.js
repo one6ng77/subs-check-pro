@@ -1308,16 +1308,25 @@
     // 3. 解锁信息格式化 (采用更克制的标签)
     const mediaRaw = rawSummary.match(/流媒体解锁: \[(.*?)\]/)?.[1] || "";
     const aiRaw = rawSummary.match(/AI 解锁\[(.*?)\]/)?.[1] || "";
-    let featureRow = "";
+    let unlockDetailsRow = "";
 
     if (mediaRaw || aiRaw) {
-      featureRow = `
+      unlockDetailsRow = `
       <div class="summary-line">
         <span class="sub-label">解锁：</span>
         ${mediaRaw ? `<span class="muted-list">[ <span class="tag-media tag-list">媒体</span> ] ${mediaRaw}</span>` : ''}
         ${mediaRaw && aiRaw ? '<span class="sep-pipe">|</span>' : ''}
         ${aiRaw ? `<span class="muted-list">[ <span class="tag-ai tag-list">AI</span> ] ${aiRaw}</span></div>` : ''}
       </div>`;
+    }
+
+    let speedtestConfigRow = "";
+    if (info.check_min_speed > 0) {
+      speedtestConfigRow = `
+        <span class="kv">测速下限 <b>${info.check_min_speed}</b> KB/s</span>`;
+    } else {
+      speedtestConfigRow = `
+        <span class="sub-label">仅测活</span>`;
     }
 
     summaryCard.innerHTML = `
@@ -1336,7 +1345,11 @@
       <div class="tip-content">
         <!-- 第一行：任务概览 - 核心数据强调 -->
         <div class="summary-line">
-          <span class="kv">本次检测消耗流量 <b>${info.check_traffic || '-'}</b></span>
+          <span class="sub-label">${info.check_time || '-'}</span>
+          <span class="sep-pipe">|</span>
+          ${speedtestConfigRow}
+          <span class="sep-pipe">|</span>
+          <span class="kv">检测消耗流量 <b>${info.check_traffic || '-'}</b></span>
         </div>
 
         <!-- 第二行：基建分析 - 线路特征总结 -->
@@ -1357,7 +1370,7 @@
 
         <!-- 功能行：解锁状态 -->
         <div class="summary-features">
-          ${featureRow}
+          ${unlockDetailsRow}
         </div>
       </div>
     </div>

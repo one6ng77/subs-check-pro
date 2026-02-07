@@ -205,6 +205,13 @@ func saveDetailedAnalysis(global *AnalysisStats, subs map[string]*AnalysisStats,
 	sb.WriteString("  check_duration: " + prettyDuration(CheckDuration) + "\n")
 	sb.WriteString("  check_count: " + prettyTotal(int(Progress.Load())) + "\n")
 	sb.WriteString("  check_traffic: " + CheckTriffic + "\n")
+	var speedText string
+	if speedON {
+		speedText = fmt.Sprintf("%d", config.GlobalConfig.MinSpeed)
+	} else {
+		speedText = "0"
+	}
+	sb.WriteString("  check_min_speed: " + speedText + "\n")
 	sb.WriteString("\n")
 
 	// 2. 全局统计 (可视化友好结构)
