@@ -1256,11 +1256,39 @@
         notFoundEl.style.display = 'none' // 隐藏提示
         if (els.historyLine) els.historyLine.style.display = 'block' // 显示数据行
 
+        // 计算友好显示文本（时间格式化、时长格式化等）
+        const prettyTime = (() => {
+          try {
+            const dt = info.lastCheckTime ? new Date(String(info.lastCheckTime).replace(' ', 'T')) : null;
+            return dt && !isNaN(dt)
+              ? dt.toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+              : (info.lastCheckTime || '-');
+          } catch (e) {
+            return info.lastCheckTime || '未知';
+          }
+        })();
+
+        const prettyDuration = (typeof info.duration === 'number')
+          ? (info.duration >= 3600 // 超过 60 分钟（3600 秒）
+            ? Math.floor(info.duration / 60) + '分'
+            : (info.duration >= 60
+              ? Math.floor(info.duration / 60) + '分' + (info.duration % 60) + '秒'
+              : info.duration + '秒'))
+          : (info.duration || '0');
+
+        const prettyTotal = (typeof info.total === 'number')
+          ? (info.total >= 1000000
+            ? (info.total / 10000).toFixed(0) + '万'
+            : (info.total >= 10000
+              ? (info.total / 10000).toFixed(1) + '万'
+              : info.total))
+          : (info.total || '0');
+
         // 填充数据
         const mapping = {
-          historyLastTime: info.lastCheckTime,
-          historyLastDuration: info.duration,
-          historyLastTotal: info.total,
+          historyLastTime: prettyTime,
+          historyLastDuration: prettyDuration,
+          historyLastTotal: prettyTotal,
           historyLastAvailable: info.available
         }
 
